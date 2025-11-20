@@ -11,7 +11,7 @@ import {FileType} from "../types/FileType.ts";
 
 // fixme
 // fixme: endpoints
-export class MySnippetOperations implements SnippetOperations {
+export class SnippetOperationsAdapter implements SnippetOperations {
 
 
     // todo: esto deberia tener logica en back seguramente
@@ -35,7 +35,7 @@ export class MySnippetOperations implements SnippetOperations {
         return httpClient.delete<string>(`/snippets/${id}`);
     }
 
-    // ==== USERS ====
+    // todo: ==== USERS ====
     async getUserFriends(name?: string, page?: number, pageSize?: number) {
         return httpUserClient.get<PaginatedUsers>(`/v1/user/friends?name=${name ?? ""}&page=${page ?? 0}&pageSize=${pageSize ?? 10}`);
     }
@@ -54,11 +54,11 @@ export class MySnippetOperations implements SnippetOperations {
     }
 
     async modifyFormatRule(newRules: Rule[]) {
-        return httpClient.put<Rule[]>(`/v1/rules/format`, newRules);
+        return httpClient.put<Rule[]>(`/rules/format`, newRules);
     }
 
     async modifyLintingRule(newRules: Rule[]) {
-        return httpClient.put<Rule[]>(`/v1/rules/lint`, newRules);
+        return httpClient.put<Rule[]>(`/rules/lint`, newRules);
     }
 
     // todo: => ==== TEST CASES ====
@@ -67,7 +67,7 @@ export class MySnippetOperations implements SnippetOperations {
     }
 
     async postTestCase(testCase: Partial<TestCase>) {
-        return httpClient.post<TestCase>(`/v1/testcase`, testCase);
+        return httpClient.post<TestCase>(`/testcase`, testCase);
     }
 
     async removeTestCase(id: string) {
@@ -85,6 +85,6 @@ export class MySnippetOperations implements SnippetOperations {
 
     // todo: ==== FILE TYPES ====
     async getFileTypes() {
-        return httpClient.get<FileType[]>(`/v1/filetypes`);
+        return httpClient.get<FileType[]>(`/filetypes`);
     }
 }

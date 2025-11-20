@@ -5,13 +5,14 @@ import {PaginatedUsers} from "./users.ts";
 import {TestCase} from "../types/TestCase.ts";
 import {FileType} from "../types/FileType.ts";
 import {Rule} from "../types/Rule.ts";
-import {useAuth0} from "@auth0/auth0-react";
+// import {useAuth0} from "@auth0/auth0-react";
 import {useEffect} from "react";
-import { MySnippetOperations } from '../operations/MySnippetOperations.ts';
+import { SnippetOperationsAdapter } from '../operations/SnippetOperationsAdapter.ts';
+import {useAuth} from "../auth/useAuth.ts";
 
 
 export const useSnippetsOperations = () => {
-  const {getAccessTokenSilently} = useAuth0()
+  const {getAccessTokenSilently} = useAuth()
 
   useEffect(() => {
       getAccessTokenSilently()
@@ -21,7 +22,7 @@ export const useSnippetsOperations = () => {
           .catch(error => console.error(error));
   });
 
-  const snippetOperations: SnippetOperations = new MySnippetOperations(/*getAccessTokenSilently*/);
+  const snippetOperations: SnippetOperations = new SnippetOperationsAdapter(/*getAccessTokenSilently*/);
 
   return snippetOperations
 }
