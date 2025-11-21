@@ -14,7 +14,7 @@ import {FileType} from "../types/FileType.ts";
 export class SnippetOperationsAdapter implements SnippetOperations {
 
     async listSnippetDescriptors(page: number, pageSize: number, name?: string) {
-        return httpClient.get<PaginatedSnippets>(`/descriptors?page=${page}&pageSize=${pageSize}&name=${name ?? ""}`);
+        return httpClient.get<PaginatedSnippets>(`/snippets/descriptors?page=${page}&pageSize=${pageSize}&name=${name ?? ""}`);
     }
 
     async createSnippet(data: CreateSnippet) {
@@ -43,19 +43,19 @@ export class SnippetOperationsAdapter implements SnippetOperations {
     }
 
     async getFormatRules() {
-        return httpClient.get<Rule[]>(`/rules/format`);
+        return httpClient.get<Rule[]>(`/snippets/rules/format`);
     }
 
     async getLintingRules() {
-        return httpClient.get<Rule[]>(`/rules/lint`);
+        return httpClient.get<Rule[]>(`/snippets/rules/lint`);
     }
 
     async modifyFormatRule(newRules: Rule[]) {
-        return httpClient.put<Rule[]>(`/rules/format`, newRules);
+        return httpClient.put<Rule[]>(`/snippets/rules/format`, newRules);
     }
 
     async modifyLintingRule(newRules: Rule[]) {
-        return httpClient.put<Rule[]>(`/rules/lint`, newRules);
+        return httpClient.put<Rule[]>(`/snippets/rules/lint`, newRules);
     }
 
     async getTestCases() {
@@ -81,6 +81,6 @@ export class SnippetOperationsAdapter implements SnippetOperations {
     }
 
     async getFileTypes() {
-        return httpClient.get<FileType[]>(`/filetypes`);
+        return httpClient.get<FileType[]>(`/snippets/filetypes`);
     }
 }
