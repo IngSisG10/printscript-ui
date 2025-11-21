@@ -13,10 +13,8 @@ import {FileType} from "../types/FileType.ts";
 // fixme: endpoints
 export class SnippetOperationsAdapter implements SnippetOperations {
 
-
-    // todo: esto deberia tener logica en back seguramente
     async listSnippetDescriptors(page: number, pageSize: number, name?: string) {
-        return httpClient.get<PaginatedSnippets>(`/snippets?page=${page}&pageSize=${pageSize}&name=${name ?? ""}`);
+        return httpClient.get<PaginatedSnippets>(`/descriptors?page=${page}&pageSize=${pageSize}&name=${name ?? ""}`);
     }
 
     async createSnippet(data: CreateSnippet) {
@@ -44,7 +42,6 @@ export class SnippetOperationsAdapter implements SnippetOperations {
         return httpUserClient.post<Snippet>(`/v1/snippet/${snippetId}/share/${userId}`);
     }
 
-    // todo: ==== RULES ==== (snippet service -> printscript service)
     async getFormatRules() {
         return httpClient.get<Rule[]>(`/rules/format`);
     }
@@ -61,7 +58,6 @@ export class SnippetOperationsAdapter implements SnippetOperations {
         return httpClient.put<Rule[]>(`/rules/lint`, newRules);
     }
 
-    // todo: => ==== TEST CASES ====
     async getTestCases() {
         return httpClient.get<TestCase[]>(`/testcase`);
     }
@@ -74,8 +70,9 @@ export class SnippetOperationsAdapter implements SnippetOperations {
         return httpClient.delete<string>(`/testcase/${id}`);
     }
 
+    // todo: ==== TESTING ====
     async testSnippet(testCase: Partial<TestCase>) {
-        return httpClient.post<TestCaseResult>(`/snippets/test`, testCase);
+        return httpClient.post<TestCaseResult>(`/test`, testCase);
     }
 
     // todo: id => ==== FORMATTING ====
@@ -83,7 +80,6 @@ export class SnippetOperationsAdapter implements SnippetOperations {
         return httpClient.post<string>(`/snippets/${snippet}/format`, { snippet }); // /snippets/${id}/format
     }
 
-    // todo: ==== FILE TYPES ====
     async getFileTypes() {
         return httpClient.get<FileType[]>(`/filetypes`);
     }
