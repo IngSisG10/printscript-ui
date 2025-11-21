@@ -59,7 +59,7 @@ export class SnippetOperationsAdapter implements SnippetOperations {
     }
 
     async getTestCases() {
-        return httpClient.get<TestCase[]>(`/testcase`);
+        return httpClient.get<TestCase[]>(`/snippets/testcase`);
     }
 
     async postTestCase(testCase: Partial<TestCase>) {
