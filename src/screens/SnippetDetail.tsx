@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs";
 import "prismjs/components/prism-clike";
@@ -9,9 +9,9 @@ import CloseIcon from '@mui/icons-material/Close';
 import {
   useUpdateSnippetById
 } from "../utils/queries.tsx";
-import { useFormatSnippet, useGetSnippetById, useShareSnippet } from "../utils/queries.tsx";
+import { useFormatSnippet, useGetFileTypes, useGetSnippetById, useShareSnippet } from "../utils/queries.tsx";
 import { Bòx } from "../components/snippet-table/SnippetBox.tsx";
-import { BugReport, Delete, Download, Save, Share } from "@mui/icons-material";
+import { BugReport, Delete, Download, Save, Share, UploadFile } from "@mui/icons-material";
 import { ShareSnippetModal } from "../components/snippet-detail/ShareSnippetModal.tsx";
 import { TestSnippetModal } from "../components/snippet-test/TestSnippetModal.tsx";
 import { Snippet } from "../utils/snippet.ts";
@@ -21,6 +21,7 @@ import { queryClient } from "../App.tsx";
 import { DeleteConfirmationModal } from "../components/snippet-detail/DeleteConfirmationModal.tsx";
 import { useSnackbarContext } from "../contexts/snackbarContext.tsx";
 import { ApiError } from "../api/ApiError.ts";
+import { getFileLanguage } from "../utils/snippet.ts";
 
 type SnippetDetailProps = {
   id: string;
@@ -61,6 +62,8 @@ export const SnippetDetail = (props: SnippetDetailProps) => {
   const { mutate: shareSnippet, isLoading: loadingShare } = useShareSnippet()
   const { mutate: formatSnippet, isLoading: isFormatLoading, data: formatSnippetData } = useFormatSnippet()
   const { createSnackbar } = useSnackbarContext();
+  const { data: fileTypes } = useGetFileTypes();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { mutate: updateSnippet, isLoading: isUpdateSnippetLoading } = useUpdateSnippetById({
     onSuccess: () => queryClient.invalidateQueries(['snippet', id]),
     onError: (error: Error) => {
@@ -90,6 +93,30 @@ export const SnippetDetail = (props: SnippetDetailProps) => {
     shareSnippet({ snippetId: id, userId })
   }
 
+  const handleLoadFile = async (target: EventTarget & HTMLInputElement) => {
+    const files = target.files
+    if (!files || !files.length) {
+      createSnackbar('error', "Please select at least one file")
+      return
+    }
+    const file = files[0]
+    const splitName = file.name.split(".")
+    const fileType = getFileLanguage(fileTypes ?? [], splitName.at(-1))
+    if (!fileType) {
+      createSnackbar('error', `File type ${splitName.at(-1)} not supported`)
+      return
+    }
+    file.text().then((text) => {
+      setCode(text)
+      createSnackbar('success', 'File loaded successfully')
+    }).catch(e => {
+      console.error(e)
+      createSnackbar('error', 'Error reading file')
+    }).finally(() => {
+      target.value = ""
+    })
+  }
+
   return (
     <Box p={4} minWidth={'60vw'}>
       <Box width={'100%'} p={2} display={'flex'} justifyContent={'flex-end'}>
@@ -113,6 +140,11 @@ export const SnippetDetail = (props: SnippetDetailProps) => {
               </IconButton>
             </Tooltip>
             <DownloadButton snippet={snippet} />
+            <Tooltip title={"Load from file"}>
+              <IconButton onClick={() => fileInputRef.current?.click()}>
+                <UploadFile />
+              </IconButton>
+            </Tooltip>
             {/*<Tooltip title={runSnippet ? "Stop run" : "Run"}>*/}
             {/*  <IconButton onClick={() => setRunSnippet(!runSnippet)}>*/}
             {/*    {runSnippet ? <StopRounded/> : <PlayArrow/>}*/}
@@ -120,7 +152,7 @@ export const SnippetDetail = (props: SnippetDetailProps) => {
             {/*</Tooltip>*/}
             {/* TODO: we can implement a live mode*/}
             <Tooltip title={"Format"}>
-              <IconButton onClick={() => formatSnippet(code)} disabled={isFormatLoading}>
+              <IconButton onClick={() => formatSnippet(id)} disabled={isFormatLoading}>
                 <ReadMoreIcon />
               </IconButton>
             </Tooltip>
@@ -162,6 +194,14 @@ export const SnippetDetail = (props: SnippetDetailProps) => {
         onShare={handleShareSnippet} />
       <TestSnippetModal open={testModalOpened} onClose={() => setTestModalOpened(false)} />
       <DeleteConfirmationModal open={deleteConfirmationModalOpen} onClose={() => setDeleteConfirmationModalOpen(false)} id={snippet?.id ?? ""} setCloseDetails={handleCloseModal} />
+      <input
+        hidden
+        type={"file"}
+        ref={fileInputRef}
+        multiple={false}
+        data-testid={"load-file-input"}
+        onChange={e => handleLoadFile(e?.target)}
+      />
     </Box>
   );
 }
