@@ -77,7 +77,7 @@ export class SnippetOperationsAdapter implements SnippetOperations {
 
     // todo: id => ==== FORMATTING ====
     async formatSnippet(snippet: string) {
-        return httpClient.post<string>(`/snippets/${snippet}/format`, { snippet }); // /snippets/${id}/format
+        return httpClient.post<string>(`/snippets/${snippet}/format`); // /snippets/${id}/format
     }
 
     async getFileTypes() {

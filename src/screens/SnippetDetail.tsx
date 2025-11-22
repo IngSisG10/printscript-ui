@@ -83,8 +83,18 @@ export const SnippetDetail = (props: SnippetDetailProps) => {
   }, [snippet]);
 
   useEffect(() => {
-    if (formatSnippetData !== undefined) {
-      setCode(formatSnippetData || "")
+    if (formatSnippetData !== undefined && formatSnippetData !== null) {
+      // Manejar tanto string directo como objeto con propiedad content
+      let formattedCode: string;
+      if (typeof formatSnippetData === 'string') {
+        formattedCode = formatSnippetData;
+      } else if (typeof formatSnippetData === 'object' && formatSnippetData !== null && 'content' in formatSnippetData) {
+        const contentObj = formatSnippetData as { content?: unknown };
+        formattedCode = String(contentObj.content || "");
+      } else {
+        formattedCode = String(formatSnippetData);
+      }
+      setCode(formattedCode);
     }
   }, [formatSnippetData])
 
@@ -170,10 +180,13 @@ export const SnippetDetail = (props: SnippetDetailProps) => {
           <Box display={"flex"} gap={2}>
             <Bòx flex={1} height={"fit-content"} overflow={"none"} minHeight={"500px"} bgcolor={'black'} color={'white'} code={code}>
               <Editor
-                value={code ?? ""}
+                value={typeof code === 'string' ? code : String(code ?? "")}
                 padding={10}
-                onValueChange={(code) => setCode(code)}
-                highlight={(code) => highlight(code || "", languages.js, "javascript")}
+                onValueChange={(code) => setCode(typeof code === 'string' ? code : String(code ?? ""))}
+                highlight={(code) => {
+                  const codeStr = typeof code === 'string' ? code : String(code || "");
+                  return highlight(codeStr, languages.js, "javascript");
+                }}
                 maxLength={1000}
                 style={{
                   minHeight: "500px",
