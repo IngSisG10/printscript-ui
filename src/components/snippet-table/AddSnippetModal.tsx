@@ -10,20 +10,22 @@ import {
     SelectChangeEvent,
     Typography
 } from "@mui/material";
-import {highlight, languages} from "prismjs";
-import {useEffect, useState} from "react";
+import { highlight, languages } from "prismjs";
+import { useEffect, useState } from "react";
 import Editor from "react-simple-code-editor";
 
 import "prismjs/components/prism-clike";
 import "prismjs/components/prism-javascript";
 import "prismjs/themes/prism-okaidia.css";
-import {Save} from "@mui/icons-material";
-import {CreateSnippet, CreateSnippetWithLang} from "../../utils/snippet.ts";
-import {ModalWrapper} from "../common/ModalWrapper.tsx";
-import {useCreateSnippet, useGetFileTypes} from "../../utils/queries.tsx";
-import {queryClient} from "../../App.tsx";
+import { Save } from "@mui/icons-material";
+import { CreateSnippet, CreateSnippetWithLang } from "../../utils/snippet.ts";
+import { ModalWrapper } from "../common/ModalWrapper.tsx";
+import { useCreateSnippet, useGetFileTypes } from "../../utils/queries.tsx";
+import { queryClient } from "../../App.tsx";
+import { useSnackbarContext } from "../../contexts/snackbarContext.tsx";
+import { ApiError } from "../../api/ApiError.ts";
 
-export const AddSnippetModal = ({open, onClose, defaultSnippet}: {
+export const AddSnippetModal = ({ open, onClose, defaultSnippet }: {
     open: boolean,
     onClose: () => void,
     defaultSnippet?: CreateSnippetWithLang
@@ -31,10 +33,22 @@ export const AddSnippetModal = ({open, onClose, defaultSnippet}: {
     const [language, setLanguage] = useState(defaultSnippet?.language ?? "printscript");
     const [code, setCode] = useState(defaultSnippet?.content ?? "");
     const [snippetName, setSnippetName] = useState(defaultSnippet?.name ?? "")
-    const {mutateAsync: createSnippet, isLoading: loadingSnippet} = useCreateSnippet({
-        onSuccess: () => queryClient.invalidateQueries('listSnippets')
+    const { createSnackbar } = useSnackbarContext();
+    const { mutateAsync: createSnippet, isLoading: loadingSnippet } = useCreateSnippet({
+        onSuccess: () => {
+            queryClient.invalidateQueries('listSnippets');
+            onClose();
+        },
+        onError: (error: Error) => {
+            if (error instanceof ApiError) {
+                const errorMessage = error.getErrorMessage();
+                createSnackbar('error', errorMessage);
+            } else {
+                createSnackbar('error', error.message || 'Error al guardar el snippet');
+            }
+        }
     })
-    const {data: fileTypes} = useGetFileTypes();
+    const { data: fileTypes } = useGetFileTypes();
 
     const handleCreateSnippet = async () => {
         const newSnippet: CreateSnippet = {
@@ -44,7 +58,6 @@ export const AddSnippetModal = ({open, onClose, defaultSnippet}: {
             extension: fileTypes?.find((f) => f.language === language)?.extension ?? "prs"
         }
         await createSnippet(newSnippet);
-        onClose();
     }
 
     useEffect(() => {
@@ -58,16 +71,16 @@ export const AddSnippetModal = ({open, onClose, defaultSnippet}: {
     return (
         <ModalWrapper open={open} onClose={onClose}>
             {
-                <Box sx={{display: 'flex', flexDirection: "row", justifyContent: "space-between"}}>
+                <Box sx={{ display: 'flex', flexDirection: "row", justifyContent: "space-between" }}>
                     <Typography id="modal-modal-title" variant="h5" component="h2"
-                                sx={{display: 'flex', alignItems: 'center'}}>
+                        sx={{ display: 'flex', alignItems: 'center' }}>
                         Add Snippet
                     </Typography>
                     <Button disabled={!snippetName || !code || !language || loadingSnippet} variant="contained"
-                            disableRipple
-                            sx={{boxShadow: 0}} onClick={handleCreateSnippet}>
+                        disableRipple
+                        sx={{ boxShadow: 0 }} onClick={handleCreateSnippet}>
                         <Box pr={1} display={"flex"} alignItems={"center"} justifyContent={"center"}>
-                            {loadingSnippet ? <CircularProgress size={24}/> : <Save/>}
+                            {loadingSnippet ? <CircularProgress size={24} /> : <Save />}
                         </Box>
                         Save Snippet
                     </Button>
@@ -80,7 +93,7 @@ export const AddSnippetModal = ({open, onClose, defaultSnippet}: {
             }}>
                 <InputLabel htmlFor="name">Name</InputLabel>
                 <Input onChange={e => setSnippetName(e.target.value)} value={snippetName} id="name"
-                       sx={{width: '50%'}}/>
+                    sx={{ width: '50%' }} />
             </Box>
             <Box sx={{
                 display: 'flex',
@@ -94,12 +107,12 @@ export const AddSnippetModal = ({open, onClose, defaultSnippet}: {
                     value={language}
                     label="Age"
                     onChange={(e: SelectChangeEvent<string>) => setLanguage(e.target.value)}
-                    sx={{width: '50%'}}
+                    sx={{ width: '50%' }}
                 >
                     {
                         fileTypes?.map(x => (
                             <MenuItem data-testid={`menu-option-${x.language}`} key={x.language}
-                                      value={x.language}>{capitalize((x.language))}</MenuItem>
+                                value={x.language}>{capitalize((x.language))}</MenuItem>
                         ))
                     }
                 </Select>

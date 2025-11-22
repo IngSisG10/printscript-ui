@@ -1,9 +1,10 @@
-import {getToken} from "./tokenProvider";
+import { getToken } from "./tokenProvider";
+import { ApiError } from "./ApiError";
 
 export class HttpClient {
     constructor(
         private baseURL: string
-    ) {}
+    ) { }
 
     private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
         const token = await getToken();
@@ -22,7 +23,7 @@ export class HttpClient {
         });
 
         if (!response.ok) {
-            throw new Error(`Error ${response.status}`);
+            throw await ApiError.fromResponse(response);
         }
 
         return response.status === 204 ? ({} as T) : await response.json();
@@ -32,15 +33,15 @@ export class HttpClient {
     get<T>(endpoint: string): Promise<T> { return this.request<T>(endpoint); }
 
     post<T, B = unknown>(endpoint: string, body?: B): Promise<T> {
-        return this.request<T>(endpoint, {method: "POST", body: JSON.stringify(body)});
+        return this.request<T>(endpoint, { method: "POST", body: JSON.stringify(body) });
     }
 
     put<T, B = unknown>(endpoint: string, body?: B): Promise<T> {
-        return this.request<T>(endpoint, {method: "PUT", body: JSON.stringify(body)});
+        return this.request<T>(endpoint, { method: "PUT", body: JSON.stringify(body) });
     }
 
-    delete<T>(endpoint: string) : Promise<T> {
-        return this.request<T>(endpoint, {method: "DELETE"});
+    delete<T>(endpoint: string): Promise<T> {
+        return this.request<T>(endpoint, { method: "DELETE" });
     }
 }
 
