@@ -19,6 +19,8 @@ import { SnippetExecution } from "./SnippetExecution.tsx";
 import ReadMoreIcon from '@mui/icons-material/ReadMore';
 import { queryClient } from "../App.tsx";
 import { DeleteConfirmationModal } from "../components/snippet-detail/DeleteConfirmationModal.tsx";
+import { useSnackbarContext } from "../contexts/snackbarContext.tsx";
+import { ApiError } from "../api/ApiError.ts";
 
 type SnippetDetailProps = {
   id: string;
@@ -58,7 +60,18 @@ export const SnippetDetail = (props: SnippetDetailProps) => {
   const { data: snippet, isLoading } = useGetSnippetById(id);
   const { mutate: shareSnippet, isLoading: loadingShare } = useShareSnippet()
   const { mutate: formatSnippet, isLoading: isFormatLoading, data: formatSnippetData } = useFormatSnippet()
-  const { mutate: updateSnippet, isLoading: isUpdateSnippetLoading } = useUpdateSnippetById({ onSuccess: () => queryClient.invalidateQueries(['snippet', id]) })
+  const { createSnackbar } = useSnackbarContext();
+  const { mutate: updateSnippet, isLoading: isUpdateSnippetLoading } = useUpdateSnippetById({
+    onSuccess: () => queryClient.invalidateQueries(['snippet', id]),
+    onError: (error: Error) => {
+      if (error instanceof ApiError) {
+        const errorMessage = error.getErrorMessage();
+        createSnackbar('error', errorMessage);
+      } else {
+        createSnackbar('error', error.message || 'Error al actualizar el snippet');
+      }
+    }
+  })
 
   useEffect(() => {
     if (snippet?.content !== undefined) {
