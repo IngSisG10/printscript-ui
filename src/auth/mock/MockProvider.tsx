@@ -5,7 +5,7 @@ interface MockAuthContextType {
     user: { email: string };
     getAccessTokenSilently: () => Promise<string>;
     loginWithRedirect: () => void;
-    logout: () => void;
+    logout: (options?: { logoutParams?: { returnTo?: string } }) => void;
 }
 
 const defaultMockValue: MockAuthContextType = {
@@ -13,7 +13,13 @@ const defaultMockValue: MockAuthContextType = {
     user: { email: "mock@user.com" },
     getAccessTokenSilently: async () => "MOCK_TOKEN_DEFAULT",
     loginWithRedirect: () => console.log("Mock login"),
-    logout: () => console.log("Mock logout"),
+    logout: (options?: { logoutParams?: { returnTo?: string } }) => {
+        console.log("Mock logout", options);
+        // En modo mock, simplemente redirigir a la página principal
+        if (options?.logoutParams?.returnTo) {
+            window.location.href = options.logoutParams.returnTo;
+        }
+    },
 };
 
 
@@ -27,7 +33,13 @@ export const MockAuthProvider = ({ children }: { children: ReactNode }) => {
                 user: { email: "mock@user.com" },
                 getAccessTokenSilently: async () => "MOCK_TOKEN_123",
                 loginWithRedirect: () => console.log("Login (mock)"),
-                logout: () => console.log("Logout (mock)"),
+                logout: (options?: { logoutParams?: { returnTo?: string } }) => {
+                    console.log("Logout (mock)", options);
+                    // En modo mock, simplemente redirigir a la página principal
+                    if (options?.logoutParams?.returnTo) {
+                        window.location.href = options.logoutParams.returnTo;
+                    }
+                },
             }}
         >
             {children}
