@@ -58,8 +58,8 @@ export class SnippetOperationsAdapter implements SnippetOperations {
         return httpClient.put<Rule[]>(`/snippets/rules/lint`, newRules);
     }
 
-    async getTestCases() {
-        return httpClient.get<TestCase[]>(`/snippets/testcase`);
+    async getTestCases(snippetId: string) {
+        return httpClient.get<TestCase[]>(`/tests/${snippetId}`);
     }
 
     async postTestCase(testCase: Partial<TestCase>) {

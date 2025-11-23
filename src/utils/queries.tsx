@@ -76,10 +76,21 @@ export const useShareSnippet = () => {
 };
 
 
-export const useGetTestCases = () => {
+export const useGetTestCases = (snippetId?: string) => {
   const snippetOperations = useSnippetsOperations()
 
-  return useQuery<TestCase[] | undefined, Error>(['testCases'], () => snippetOperations.getTestCases(), {});
+  return useQuery<TestCase[] | undefined, Error>(
+    ['testCases', snippetId],
+    () => {
+      if (!snippetId) {
+        throw new Error('snippetId is required');
+      }
+      return snippetOperations.getTestCases(snippetId);
+    },
+    {
+      enabled: !!snippetId, // Solo ejecutar la query si snippetId está presente
+    }
+  );
 };
 
 
