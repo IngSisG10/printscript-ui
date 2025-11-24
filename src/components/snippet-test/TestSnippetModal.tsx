@@ -46,12 +46,12 @@ export const TestSnippetModal = ({ open, onClose, snippetId }: TestSnippetModalP
                     </IconButton>
                 </Tabs>
                 {testCases?.map((testCase, index) => (
-                    <TabPanel index={index} value={value} test={testCase}
+                    <TabPanel index={index} value={value} snippetId={snippetId} test={testCase}
                         setTestCase={(tc) => postTestCase(tc)}
                         removeTestCase={(i) => removeTestCase(i)}
                     />
                 ))}
-                <TabPanel index={(testCases?.length ?? 0) + 1} value={value}
+                <TabPanel index={(testCases?.length ?? 0) + 1} value={value} snippetId={snippetId}
                     setTestCase={(tc) => postTestCase(tc)}
                 />
             </Box>
