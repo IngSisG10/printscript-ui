@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     container_name: printscript-ui
     ports:
-      - "8084:8080"
+      - "5173:80"
     environment:
       - VITE_NGINX_URL=http://reverseproxy:80
     networks:
@@ -14,4 +14,3 @@ services:
 networks:
   shared_network:
     driver: bridge
-    external: true

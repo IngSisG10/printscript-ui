@@ -29,7 +29,7 @@ export class FakeSnippetOperations implements SnippetOperations {
     })
   }
 
-  listSnippetDescriptors(page: number,pageSize: number): Promise<PaginatedSnippets> {
+  listSnippetDescriptors(page: number, pageSize: number, _snippetName?: string): Promise<PaginatedSnippets> {
     const response: PaginatedSnippets = {
       page: page,
       page_size: pageSize,
@@ -54,7 +54,7 @@ export class FakeSnippetOperations implements SnippetOperations {
     })
   }
 
-  shareSnippet(snippetId: string): Promise<Snippet> {
+  shareSnippet(snippetId: string, _userId: string): Promise<Snippet> {
     return new Promise(resolve => {
       // @ts-expect-error, it will always find it in the fake store
       setTimeout(() => resolve(this.fakeStore.getSnippetById(snippetId)), DELAY)
@@ -79,15 +79,15 @@ export class FakeSnippetOperations implements SnippetOperations {
     })
   }
 
-  getTestCases(): Promise<TestCase[]> {
+  getTestCases(_snippetId: string): Promise<TestCase[]> {
     return new Promise(resolve => {
       setTimeout(() => resolve(this.fakeStore.getTestCases()), DELAY)
     })
   }
 
-  postTestCase(testCase: TestCase): Promise<TestCase> {
+  postTestCase(_snippetId: string, testCase: Partial<TestCase>): Promise<TestCase> {
     return new Promise(resolve => {
-      setTimeout(() => resolve(this.fakeStore.postTestCase(testCase)), DELAY)
+      setTimeout(() => resolve(this.fakeStore.postTestCase(testCase as TestCase)), DELAY)
     })
   }
 
@@ -97,7 +97,7 @@ export class FakeSnippetOperations implements SnippetOperations {
     })
   }
 
-  testSnippet(): Promise<TestCaseResult> {
+  testSnippet(_snippetId: string, _testCase: Partial<TestCase>): Promise<TestCaseResult> {
     return new Promise(resolve => {
       setTimeout(() => resolve(this.fakeStore.testSnippet()), DELAY)
     })
