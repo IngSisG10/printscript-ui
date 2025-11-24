@@ -62,20 +62,22 @@ export class SnippetOperationsAdapter implements SnippetOperations {
         return httpClient.get<TestCase[]>(`/tests/${snippetId}`);
     }
 
-    async postTestCase(testCase: Partial<TestCase>) {
-        return httpClient.post<TestCase>(`/testcase`, testCase);
+
+    async postTestCase(snippetId: string, testCase: Partial<TestCase>) {
+        return httpClient.post<TestCase>(`/tests/${snippetId}`, testCase);
     }
 
     async removeTestCase(id: string) {
-        return httpClient.delete<string>(`/testcase/${id}`);
+        return httpClient.delete<string>(`/tests/${id}`);
     }
 
-    // todo: ==== TESTING ====
+    // todo
     async testSnippet(testCase: Partial<TestCase>) {
-        return httpClient.post<TestCaseResult>(`/test`, testCase);
+        return httpClient.post<TestCaseResult>(`/run/${testCase.id}`, testCase);
     }
 
-    // todo: id => ==== FORMATTING ====
+    // todo: id (necesitamos el id, para saber cual es el snippet a formatear) - chequea que recibe en snippet
+    // tambien chequeate la logica de lo que recibe en el SnippetModal.
     async formatSnippet(snippet: string) {
         return httpClient.post<string>(`/snippets/${snippet}/format`); // /snippets/${id}/format
     }
