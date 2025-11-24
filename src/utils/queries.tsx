@@ -129,13 +129,23 @@ export const useRemoveTestCase = ({ onSuccess }: { onSuccess: () => void }) => {
 
 export type TestCaseResult = "success" | "fail"
 
-export const useTestSnippet = () => {
+export const useTestSnippet = (snippetId?: string) => {
   const snippetOperations = useSnippetsOperations()
 
   return useMutation<TestCaseResult, Error, Partial<TestCase>>(
-    (tc) => snippetOperations.testSnippet(tc)
+      (tc) => {
+        if (!snippetId) {
+          console.log(snippetId);
+          return Promise.reject(new Error("snippetId is required"));
+        }
+        return snippetOperations.testSnippet(snippetId, tc);
+      },
+      {
+        mutationKey: ["testSnippet", snippetId],
+      }
   )
 }
+
 
 
 

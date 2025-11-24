@@ -7,15 +7,16 @@ import {useTestSnippet} from "../../utils/queries.tsx";
 type TabPanelProps = {
     index: number;
     value: number;
+    snippetId: string;
     test?: TestCase;
     setTestCase: (test: Partial<TestCase>) => void;
     removeTestCase?: (testIndex: string) => void;
 }
 
-export const TabPanel = ({value, index, test: initialTest, setTestCase, removeTestCase}: TabPanelProps) => {
+export const TabPanel = ({value, index, snippetId, test: initialTest, setTestCase, removeTestCase}: TabPanelProps) => {
     const [testData, setTestData] = useState<Partial<TestCase> | undefined>(initialTest);
 
-    const {mutateAsync: testSnippet, data} = useTestSnippet();
+    const {mutateAsync: testSnippet, data} = useTestSnippet(snippetId);
 
 
     return (
