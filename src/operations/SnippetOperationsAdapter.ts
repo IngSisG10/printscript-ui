@@ -35,11 +35,11 @@ export class SnippetOperationsAdapter implements SnippetOperations {
 
     // todo: ==== USERS ====
     async getUserFriends(name?: string, page?: number, pageSize?: number) {
-        return httpUserClient.get<PaginatedUsers>(`/v1/user/friends?name=${name ?? ""}&page=${page ?? 0}&pageSize=${pageSize ?? 10}`);
+        return httpUserClient.get<PaginatedUsers>(`/users/friends?name=${name ?? ""}&page=${page ?? 0}&pageSize=${pageSize ?? 5}`);
     }
 
-    async shareSnippet(snippetId: string, userId: string) {
-        return httpUserClient.post<Snippet>(`/v1/snippet/${snippetId}/share/${userId}`);
+    async shareSnippet(snippetId: string, targetUserEmail: string) {
+        return httpUserClient.post<Snippet>(`/snippets/share`, { snippetId, targetUserEmail });
     }
 
     async getFormatRules() {
