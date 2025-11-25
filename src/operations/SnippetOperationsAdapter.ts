@@ -74,7 +74,7 @@ export class SnippetOperationsAdapter implements SnippetOperations {
 
     // todo
     async testSnippet(snippetId: string, testCase: Partial<TestCase>) {
-        return httpClient.post<TestCaseResult>(`/tests/run/${snippetId}`, testCase);
+        return httpClient.post<TestCaseResult>(`/tests/run/${snippetId}`, testCase)
     }
 
     // todo: id (necesitamos el id, para saber cual es el snippet a formatear) - chequea que recibe en snippet

@@ -46,6 +46,5 @@ export class HttpClient {
 }
 
 
-// Instancia singleton del cliente HTTP - fixme lo de local
-export const httpClient = new HttpClient(process.env.VITE_API_BASE_URL || 'http://localhost:8082');
-export const httpUserClient = new HttpClient(process.env.VITE_API_USER_BASE_URL || 'http://localhost:8089');
+export const httpClient = new HttpClient(process.env.VITE_NGINX_URL || 'http://localhost:8082');
+export const httpUserClient = new HttpClient(process.env.VITE_NGINX_URL || 'http://localhost:8083');
