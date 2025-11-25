@@ -78,7 +78,7 @@ export class SnippetOperationsAdapter implements SnippetOperations {
     }
 
     // todo: id (necesitamos el id, para saber cual es el snippet a formatear) - chequea que recibe en snippet
-    // tambien chequeate la logica de lo que recibe en el SnippetModal.
+    // todo: tambien chequeate la logica de lo que recibe en el SnippetModal.
     async formatSnippet(snippet: string) {
         return httpClient.post<string>(`/snippets/${snippet}/format`); // /snippets/${id}/format
     }
