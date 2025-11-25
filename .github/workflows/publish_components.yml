@@ -1,18 +1,23 @@
-name: publish_components.yml
+# printscript-ui/.github/workflows/build_and_publish.yml
+name: Build and Publish Docker Image
 
 on:
   workflow_dispatch: {}
-  workflow_call: {}
   push:
     branches:
       - main
+      - master
 
 permissions:
   contents: read
   packages: write
 
 jobs:
-
-  publish-img:
-    uses: IngSisG10/snippet-infrastructure/.github/workflows/publish_docker_img_to_ghcr.yml@main
-    secrets: inherit
+  publish-docker-image:
+    uses: IngSisG10/snippet-infrastructure/.github/workflows/publish_frontend_to_ghcr.yml@main
+    secrets:
+      VITE_AUTH0_DOMAIN: ${{ secrets.VITE_AUTH0_DOMAIN }}
+      VITE_AUTH0_CLIENT_ID: ${{ secrets.VITE_AUTH0_CLIENT_ID }}
+      VITE_AUTH0_AUDIENCE: ${{ secrets.VITE_AUTH0_AUDIENCE }}
+      VITE_FRONTEND_URL: ${{ secrets.VITE_FRONTEND_URL }}
+      VITE_BACKEND_URL: ${{ secrets.VITE_BACKEND_URL }}
