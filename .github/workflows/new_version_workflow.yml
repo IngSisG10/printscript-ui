@@ -19,6 +19,7 @@ jobs:
       VITE_AUTH0_AUDIENCE: ${{ secrets.VITE_AUTH0_AUDIENCE }}
       VITE_FRONTEND_URL: ${{ secrets.VITE_FRONTEND_URL }}
       VITE_BACKEND_URL: ${{ secrets.VITE_BACKEND_URL }}
+      VITE_NGINX_URL: ${{ secrets.VITE_NGINX_URL }}
 
   start-vm:
     uses: IngSisG10/snippet-infrastructure/.github/workflows/azure_start_vm.yml@main
