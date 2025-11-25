@@ -5,14 +5,13 @@ import { PaginatedUsers } from "./users.ts";
 import { TestCase } from "../types/TestCase.ts";
 import { FileType } from "../types/FileType.ts";
 import { Rule } from "../types/Rule.ts";
-// import {useAuth0} from "@auth0/auth0-react";
 import { useEffect } from "react";
 import { SnippetOperationsAdapter } from '../operations/SnippetOperationsAdapter.ts';
-import { useAuth } from "../auth/useAuth.ts";
+import {useAuth0} from "@auth0/auth0-react";
 
 
 export const useSnippetsOperations = () => {
-  const { getAccessTokenSilently } = useAuth()
+  const { getAccessTokenSilently } = useAuth0()
 
   useEffect(() => {
     getAccessTokenSilently()
