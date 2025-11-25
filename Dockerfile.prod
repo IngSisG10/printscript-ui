@@ -1,6 +1,6 @@
 # Build stage
-  FROM node:20-alpine AS build
-  WORKDIR /app
+FROM node:20-alpine AS build
+WORKDIR /app
 
   # Declarar build args para las variables VITE
   ARG VITE_AUTH0_DOMAIN
