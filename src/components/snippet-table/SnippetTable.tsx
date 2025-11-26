@@ -5,6 +5,7 @@ import {
   InputBase,
   Menu,
   MenuItem,
+  Select,
   styled,
   Table,
   TableBody,
@@ -14,6 +15,7 @@ import {
   TablePagination,
   TableRow
 } from "@mui/material";
+
 import { AddSnippetModal } from "./AddSnippetModal.tsx";
 import { useRef, useState } from "react";
 import { Add, Search } from "@mui/icons-material";
@@ -35,7 +37,7 @@ export const SnippetTable = (props: SnippetTableProps) => {
   const [addModalOpened, setAddModalOpened] = useState(false);
   const [popoverMenuOpened, setPopoverMenuOpened] = useState(false)
   const [snippet, setSnippet] = useState<CreateSnippetWithLang | undefined>()
-
+  const [filterValue, setFilterValue] = useState<'all' | 'owner' | 'read'>('all');
   const popoverRef = useRef<HTMLButtonElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const { page, page_size: pageSize, count, handleChangePageSize, handleGoToPage } = usePaginationContext()
@@ -88,12 +90,31 @@ export const SnippetTable = (props: SnippetTableProps) => {
             <Search />
           </IconButton>
         </Box>
-        <Button ref={popoverRef} variant="contained" disableRipple sx={{ boxShadow: 0 }}
-          onClick={() => setPopoverMenuOpened(true)}>
-          <Add />
-          Add Snippet
-        </Button>
-      </Box>
+            <Box display="flex" gap={2}>
+                <Select
+                    value={filterValue}
+                    onChange={(e) => setFilterValue(e.target.value as 'all' | 'owner' | 'read')}
+                    sx={{
+                        minWidth: 120,
+                        boxShadow: 0,
+                        background: 'blue',
+                        color: 'white',
+                        '& .MuiOutlinedInput-notchedOutline': { border: 0 },
+                        '& .MuiSelect-icon': { color: 'white' }
+                    }}
+                >
+                    <MenuItem value="all">All</MenuItem>
+                    <MenuItem value="owner">Owner</MenuItem>
+                    <MenuItem value="read">Read</MenuItem>
+                </Select>
+
+                <Button ref={popoverRef} variant="contained" disableRipple sx={{ boxShadow: 0 }}
+                        onClick={() => setPopoverMenuOpened(true)}>
+                    <Add />
+                    Add Snippet
+                </Button>
+            </Box>
+        </Box>
       <Table size="medium" sx={{ borderSpacing: "0 10px", borderCollapse: "separate" }}>
         <TableHead>
           <TableRow sx={{ fontWeight: 'bold' }}>
