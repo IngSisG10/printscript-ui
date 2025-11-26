@@ -46,5 +46,5 @@ export class HttpClient {
 }
 
 
-export const httpClient = new HttpClient(process.env.VITE_NGINX_URL || 'http://localhost:8082');
-export const httpUserClient = new HttpClient(process.env.VITE_NGINX_URL || 'http://localhost:8083');
+export const httpClient = new HttpClient(import.meta.env.VITE_NGINX_URL || 'http://localhost:8082');
+export const httpUserClient = new HttpClient(import.meta.env.VITE_NGINX_URL || 'http://localhost:8083');
