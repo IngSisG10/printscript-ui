@@ -1,5 +1,5 @@
-import {useMutation, UseMutationResult, useQuery, useQueryClient} from 'react-query';
-import { CreateSnippet, PaginatedSnippets, Snippet, UpdateSnippet } from './snippet.ts';
+import { useMutation, UseMutationResult, useQuery, useQueryClient } from 'react-query';
+import { CreateSnippet, ExecutionResult, PaginatedSnippets, Snippet, UpdateSnippet } from './snippet.ts';
 import { SnippetOperations } from "./snippetOperations.ts";
 import { PaginatedUsers } from "./users.ts";
 import { TestCase } from "../types/TestCase.ts";
@@ -7,7 +7,7 @@ import { FileType } from "../types/FileType.ts";
 import { Rule } from "../types/Rule.ts";
 import { useEffect } from "react";
 import { SnippetOperationsAdapter } from '../operations/SnippetOperationsAdapter.ts';
-import {useAuth0} from "@auth0/auth0-react";
+import { useAuth0 } from "@auth0/auth0-react";
 
 
 export const useSnippetsOperations = () => {
@@ -98,17 +98,17 @@ export const usePostTestCase = (snippetId?: string) => {
   const queryClient = useQueryClient();
 
   return useMutation<TestCase, Error, Partial<TestCase>>(
-      (tc) => {
-        if (!snippetId) {
-          throw new Error("snippetId is required");
-        }
-        return snippetOperations.postTestCase(snippetId, tc);
-      },
-      {
-        onSuccess: () => {
-          queryClient.invalidateQueries(["testCases", snippetId])
-        },
+    (tc) => {
+      if (!snippetId) {
+        throw new Error("snippetId is required");
       }
+      return snippetOperations.postTestCase(snippetId, tc);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["testCases", snippetId])
+      },
+    }
   );
 };
 
@@ -132,20 +132,26 @@ export const useTestSnippet = (snippetId?: string) => {
   const snippetOperations = useSnippetsOperations()
 
   return useMutation<TestCaseResult, Error, Partial<TestCase>>(
-      (tc) => {
-        if (!snippetId) {
-          console.log(snippetId);
-          return Promise.reject(new Error("snippetId is required"));
-        }
-        return snippetOperations.testSnippet(snippetId, tc);
-      },
-      {
-        mutationKey: ["testSnippet", snippetId],
+    (tc) => {
+      if (!snippetId) {
+        console.log(snippetId);
+        return Promise.reject(new Error("snippetId is required"));
       }
+      return snippetOperations.testSnippet(snippetId, tc);
+    },
+    {
+      mutationKey: ["testSnippet", snippetId],
+    }
   )
 }
 
+export const useRunSnippet = () => {
+  const snippetOperations = useSnippetsOperations()
 
+  return useMutation<ExecutionResult, Error, string>(
+    id => snippetOperations.runSnippet(id)
+  );
+}
 
 
 export const useGetFormatRules = () => {

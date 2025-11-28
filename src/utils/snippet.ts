@@ -1,11 +1,11 @@
-import {Pagination} from "./pagination.ts";
-import {FileType} from "../types/FileType.ts";
+import { Pagination } from "./pagination.ts";
+import { FileType } from "../types/FileType.ts";
 
 export type ComplianceEnum =
-    'pending' |
-    'failed' |
-    'not-compliant' |
-    'compliant'
+  'pending' |
+  'failed' |
+  'not-compliant' |
+  'compliant'
 
 
 export type CreateSnippet = {
@@ -32,6 +32,12 @@ type SnippetStatus = {
 export type PaginatedSnippets = Pagination & {
   snippets: Snippet[]
 }
+
+export type ExecutionResult = {
+  output: string[];
+  errors: string[];
+}
+
 
 export const getFileLanguage = (fileTypes: FileType[], fileExt?: string) => {
   return fileExt && fileTypes?.find(x => x.extension == fileExt)
