@@ -43,18 +43,7 @@ export const SnippetExecution = ({ output }: SnippetExecutionProps) => {
 }
 
 export const SnippetExecutionTest = ({ output }: SnippetExecutionProps) => {
-  // Here you should provide all the logic to connect to your sockets.
-  const [input, setInput] = useState<string>("")
-
-  //TODO: get the output from the server
   const code = output.join("\n")
-
-  const handleEnter = (event: { key: string }) => {
-    if (event.key === 'Enter') {
-      //TODO: logic to send inputs to server
-      setInput("")
-    }
-  };
 
   return (
     <>
@@ -62,7 +51,7 @@ export const SnippetExecutionTest = ({ output }: SnippetExecutionProps) => {
         <Editor
           value={code}
           padding={10}
-          onValueChange={(code) => setInput(code)}
+          onValueChange={() => { }} // Read-only, no-op handler
           highlight={(code) => highlight(code, languages.js, 'javascript')}
           maxLength={1000}
           style={{
