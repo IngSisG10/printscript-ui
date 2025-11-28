@@ -4,7 +4,7 @@ import { Autocomplete, Box, Button, Chip, TextField, Typography } from "@mui/mat
 import { BugReport, Delete, Save } from "@mui/icons-material";
 import { useTestSnippet } from "../../utils/queries.tsx";
 import { TestCaseResult } from "../../utils/queries.tsx";
-import { SnippetExecution } from "../../screens/SnippetExecution.tsx";
+import { SnippetExecutionTest } from "../../screens/SnippetExecution.tsx";
 
 type TabPanelProps = {
     index: number;
@@ -119,7 +119,7 @@ export const TabPanel = ({ value, index, snippetId, test: initialTest, setTestCa
                     {testResult && typeof testResult !== 'string' && testResult.output && (
                         <Box display="flex" flexDirection="column" gap={1} flex={1}>
                             <Typography fontWeight="bold">Output</Typography>
-                            <SnippetExecution output={testResult.output} />
+                            <SnippetExecutionTest output={testResult.output} />
                         </Box>
                     )}
                 </Box>
