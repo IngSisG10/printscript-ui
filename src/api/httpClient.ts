@@ -26,7 +26,24 @@ export class HttpClient {
             throw await ApiError.fromResponse(response);
         }
 
-        return response.status === 204 ? ({} as T) : await response.json();
+        if (response.status === 204) {
+            return {} as T;
+        }
+
+        // Check Content-Type to handle both JSON and text/plain responses
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+            return await response.json();
+        } else {
+            // Handle text/plain responses (e.g., "success" or "fail")
+            const text = await response.text();
+            // Try to parse as JSON first, fallback to text
+            try {
+                return JSON.parse(text) as T;
+            } catch {
+                return text as T;
+            }
+        }
     }
 
 
@@ -46,5 +63,5 @@ export class HttpClient {
 }
 
 
-export const httpClient = new HttpClient(process.env.VITE_NGINX_URL || 'http://localhost:8082');
-export const httpUserClient = new HttpClient(process.env.VITE_NGINX_URL || 'http://localhost:8083');
+export const httpClient = new HttpClient(import.meta.env.VITE_NGINX_URL || 'http://localhost:8082');
+export const httpUserClient = new HttpClient(import.meta.env.VITE_NGINX_URL || 'http://localhost:8082');

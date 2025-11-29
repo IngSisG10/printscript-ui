@@ -9,9 +9,9 @@ import CloseIcon from '@mui/icons-material/Close';
 import {
   useUpdateSnippetById
 } from "../utils/queries.tsx";
-import { useFormatSnippet, useGetFileTypes, useGetSnippetById, useShareSnippet } from "../utils/queries.tsx";
+import { useFormatSnippet, useGetFileTypes, useGetSnippetById, useRunSnippet, useShareSnippet } from "../utils/queries.tsx";
 import { Bòx } from "../components/snippet-table/SnippetBox.tsx";
-import { BugReport, Delete, Download, Save, Share, UploadFile } from "@mui/icons-material";
+import { BugReport, Delete, Download, PlayArrow, Save, Share, UploadFile } from "@mui/icons-material";
 import { ShareSnippetModal } from "../components/snippet-detail/ShareSnippetModal.tsx";
 import { TestSnippetModal } from "../components/snippet-test/TestSnippetModal.tsx";
 import { Snippet } from "../utils/snippet.ts";
@@ -57,6 +57,7 @@ export const SnippetDetail = (props: SnippetDetailProps) => {
   const [shareModalOppened, setShareModalOppened] = useState(false)
   const [deleteConfirmationModalOpen, setDeleteConfirmationModalOpen] = useState(false)
   const [testModalOpened, setTestModalOpened] = useState(false);
+  const [executionOutput, setExecutionOutput] = useState<string[]>([]);
 
   const { data: snippet, isLoading } = useGetSnippetById(id);
   const { mutate: shareSnippet, isLoading: loadingShare } = useShareSnippet()
@@ -75,6 +76,8 @@ export const SnippetDetail = (props: SnippetDetailProps) => {
       }
     }
   })
+
+  const { mutate: runSnippet, isLoading: isRunLoading } = useRunSnippet();
 
   useEffect(() => {
     if (snippet?.content !== undefined) {
@@ -102,6 +105,18 @@ export const SnippetDetail = (props: SnippetDetailProps) => {
   async function handleShareSnippet(userId: string) {
     shareSnippet({ snippetId: id, userId })
   }
+
+  function handleRunSnippet() {
+    runSnippet(id, {
+      onSuccess: (result) => {
+        setExecutionOutput(result.output ?? []);
+      },
+      onError: (error) => {
+        createSnackbar('error', error.message || 'Error running snippet');
+      }
+    });
+  }
+
 
   const handleLoadFile = async (target: EventTarget & HTMLInputElement) => {
     const files = target.files
@@ -155,11 +170,11 @@ export const SnippetDetail = (props: SnippetDetailProps) => {
                 <UploadFile />
               </IconButton>
             </Tooltip>
-            {/*<Tooltip title={runSnippet ? "Stop run" : "Run"}>*/}
-            {/*  <IconButton onClick={() => setRunSnippet(!runSnippet)}>*/}
-            {/*    {runSnippet ? <StopRounded/> : <PlayArrow/>}*/}
-            {/*  </IconButton>*/}
-            {/*</Tooltip>*/}
+            <Tooltip title={isRunLoading ? "Running..." : "Run"}>
+              <IconButton onClick={handleRunSnippet} disabled={isRunLoading}>
+                {isRunLoading ? <CircularProgress size={24} /> : <PlayArrow />}
+              </IconButton>
+            </Tooltip>
             {/* TODO: we can implement a live mode*/}
             <Tooltip title={"Format"}>
               <IconButton onClick={() => formatSnippet(id)} disabled={isFormatLoading}>
@@ -198,7 +213,7 @@ export const SnippetDetail = (props: SnippetDetailProps) => {
           </Box>
           <Box pt={1} flex={1} marginTop={2}>
             <Alert severity="info">Output</Alert>
-            <SnippetExecution />
+            <SnippetExecution output={executionOutput} />
           </Box>
         </>
       }

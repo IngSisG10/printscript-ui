@@ -2,7 +2,7 @@ import { AppBar, Box, Button, Container, Toolbar, Typography } from "@mui/materi
 import { Code, Rule, Logout } from "@mui/icons-material";
 import { ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "../../auth/useAuth";
+import {useAuth0} from "@auth0/auth0-react";
 
 type PageType = {
     title: string;
@@ -23,7 +23,7 @@ const pages: PageType[] = [{
 export const Navbar = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { logout } = useAuth();
+    const { logout } = useAuth0();
 
     const handleLogout = () => {
         logout({

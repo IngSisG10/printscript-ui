@@ -1,11 +1,11 @@
-import {httpClient, httpUserClient} from "../api/httpClient";
+import { httpClient, httpUserClient } from "../api/httpClient";
 import { SnippetOperations } from "../utils/snippetOperations.ts";
-import {CreateSnippet, PaginatedSnippets, Snippet, UpdateSnippet} from "../utils/snippet.ts";
-import {PaginatedUsers} from "../utils/users.ts";
-import {Rule} from "../types/Rule.ts";
-import {TestCase} from "../types/TestCase.ts";
-import {TestCaseResult} from "../utils/queries.tsx";
-import {FileType} from "../types/FileType.ts";
+import { CreateSnippet, ExecutionResult, PaginatedSnippets, Snippet, UpdateSnippet } from "../utils/snippet.ts";
+import { PaginatedUsers } from "../utils/users.ts";
+import { Rule } from "../types/Rule.ts";
+import { TestCase } from "../types/TestCase.ts";
+import { TestCaseResult } from "../utils/queries.tsx";
+import { FileType } from "../types/FileType.ts";
 
 // Adapter
 
@@ -72,9 +72,12 @@ export class SnippetOperationsAdapter implements SnippetOperations {
     }
 
 
-    // todo
     async testSnippet(snippetId: string, testCase: Partial<TestCase>) {
         return httpClient.post<TestCaseResult>(`/tests/run/${snippetId}`, testCase)
+    }
+
+    async runSnippet(snippetId: string) {
+        return httpClient.post<ExecutionResult>(`/snippets/run/${snippetId}`);
     }
 
     // todo: id (necesitamos el id, para saber cual es el snippet a formatear) - chequea que recibe en snippet
