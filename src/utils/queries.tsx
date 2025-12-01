@@ -214,3 +214,11 @@ export const useGetFileTypes = () => {
 
   return useQuery<FileType[], Error>('fileTypes', () => snippetOperations.getFileTypes());
 }
+
+export const useRegisterOrLoginUser = () => {
+    const snippetOperations = useSnippetsOperations()
+
+    return useMutation<{ success: boolean; userId: string }, Error>(
+        () => snippetOperations.registerOrLoginUser()
+    );
+}

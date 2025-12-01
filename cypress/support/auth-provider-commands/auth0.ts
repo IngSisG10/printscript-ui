@@ -14,7 +14,7 @@ export function loginViaAuth0Ui(username: string, password: string) {
         cy.contains('button[value=default]', 'Continue').click()
       }
   )
-
+0
   // Ensure Auth0 has redirected us back to the RWA.
   cy.url().should('equal', 'http://localhost:3000/')
 }

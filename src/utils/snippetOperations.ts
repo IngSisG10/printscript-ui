@@ -1,4 +1,4 @@
-import {CreateSnippet, PaginatedSnippets, Snippet, UpdateSnippet} from './snippet'
+import {CreateSnippet, ExecutionResult, PaginatedSnippets, Snippet, UpdateSnippet} from './snippet'
 import {PaginatedUsers} from "./users.ts";
 import {TestCase} from "../types/TestCase.ts";
 import {TestCaseResult} from "./queries.tsx";
@@ -41,4 +41,6 @@ export interface SnippetOperations {
   modifyLintingRule(newRules: Rule[]): Promise<Rule[]>
 
   runSnippet(snippetId: string): Promise<ExecutionResult>
+
+  registerOrLoginUser(): Promise<{ success: boolean; userId: string }>
 }

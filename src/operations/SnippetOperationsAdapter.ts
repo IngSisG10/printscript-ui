@@ -89,4 +89,8 @@ export class SnippetOperationsAdapter implements SnippetOperations {
     async getFileTypes() {
         return httpClient.get<FileType[]>(`/snippets/filetypes`);
     }
+
+    async registerOrLoginUser() {
+        return httpClient.post<{ success: boolean; userId: string }>(`/users/register-or-login`);
+    }
 }
