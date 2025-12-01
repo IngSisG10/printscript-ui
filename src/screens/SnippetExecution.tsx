@@ -28,6 +28,7 @@ export const SnippetExecution = ({ output }: SnippetExecutionProps) => {
         <Editor
           value={code}
           padding={10}
+          data-testid="snippet-execution-output-editor"
           onValueChange={(code) => setInput(code)}
           highlight={(code) => highlight(code, languages.js, 'javascript')}
           maxLength={1000}

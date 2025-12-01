@@ -34,6 +34,7 @@ export const ShareSnippetModal = (props: ShareSnippetModalProps) => {
         <Divider/>
         <Box mt={2}>
           <Autocomplete
+              data-testid="share-snippet-autocomplete"
               renderInput={(params) => <TextField {...params} label="Type the user's name"/>}
               options={data?.users ?? []}
               isOptionEqualToValue={(option, value) =>
@@ -47,7 +48,7 @@ export const ShareSnippetModal = (props: ShareSnippetModalProps) => {
           />
           <Box mt={4} display={"flex"} width={"100%"} justifyContent={"flex-end"}>
             <Button onClick={onClose} variant={"outlined"}>Cancel</Button>
-            <Button disabled={!selectedUser || loading} onClick={() => selectedUser && onShare(selectedUser?.name)} sx={{marginLeft: 2}} variant={"contained"}>Share</Button>
+            <Button disabled={!selectedUser || loading} onClick={() => selectedUser && onShare(selectedUser?.name)} sx={{marginLeft: 2}} variant={"contained"} data-testid="share-snippet-button">Share</Button>
           </Box>
         </Box>
       </ModalWrapper>

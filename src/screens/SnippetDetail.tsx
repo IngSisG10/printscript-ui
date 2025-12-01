@@ -172,23 +172,23 @@ export const SnippetDetail = (props: SnippetDetailProps) => {
             </Tooltip>
             <Tooltip title={isRunLoading ? "Running..." : "Run"}>
               <IconButton onClick={handleRunSnippet} disabled={isRunLoading}>
-                {isRunLoading ? <CircularProgress size={24} /> : <PlayArrow />}
+                {isRunLoading ? <CircularProgress size={24} /> : <PlayArrow data-testid="PlayArrowIcon" />}
               </IconButton>
             </Tooltip>
             {/* TODO: we can implement a live mode*/}
             <Tooltip title={"Format"}>
               <IconButton onClick={() => formatSnippet(id)} disabled={isFormatLoading}>
-                <ReadMoreIcon />
+                <ReadMoreIcon data-testid="ReadMoreIcon" />
               </IconButton>
             </Tooltip>
             <Tooltip title={"Save changes"}>
               <IconButton color={"primary"} onClick={() => updateSnippet({ id: id, updateSnippet: { content: code } })} disabled={isUpdateSnippetLoading || snippet?.content === code} >
-                <Save />
+                <Save data-testid="SaveIcon" />
               </IconButton>
             </Tooltip>
             <Tooltip title={"Delete"}>
               <IconButton onClick={() => setDeleteConfirmationModalOpen(true)} >
-                <Delete color={"error"} />
+                <Delete color={"error"} data-testid="DeleteIcon" />
               </IconButton>
             </Tooltip>
           </Box>
@@ -197,6 +197,7 @@ export const SnippetDetail = (props: SnippetDetailProps) => {
               <Editor
                 value={typeof code === 'string' ? code : String(code ?? "")}
                 padding={10}
+                data-testid="snippet-detail-code-editor"
                 onValueChange={(code) => setCode(typeof code === 'string' ? code : String(code ?? ""))}
                 highlight={(code) => {
                   const codeStr = typeof code === 'string' ? code : String(code || "");
