@@ -43,19 +43,20 @@ export class SnippetOperationsAdapter implements SnippetOperations {
     }
 
     async getFormatRules() {
-        return httpClient.get<Rule[]>(`/snippets/rules/format`);
+        return httpClient.get<Rule[]>(`/rules/format`);
     }
 
     async getLintingRules() {
-        return httpClient.get<Rule[]>(`/snippets/rules/lint`);
+        return httpClient.get<Rule[]>(`/rules/lint`);
     }
 
+
     async modifyFormatRule(newRules: Rule[]) {
-        return httpClient.put<Rule[]>(`/snippets/rules/format`, newRules);
+        return httpClient.put<Rule[]>(`/rules/format`, newRules);
     }
 
     async modifyLintingRule(newRules: Rule[]) {
-        return httpClient.put<Rule[]>(`/snippets/rules/lint`, newRules);
+        return httpClient.put<Rule[]>(`/rules/lint`, newRules);
     }
 
     async getTestCases(snippetId: string) {
