@@ -1,23 +1,22 @@
-import {AUTH0_PASSWORD, AUTH0_USERNAME, BACKEND_URL} from "../../src/utils/constants";
-import {FakeSnippetStore} from "../../src/utils/mock/fakeSnippetStore";
+import {BACKEND_URL} from "../../src/utils/constants";
+import {SnippetOperationsAdapter} from "../../src/operations/SnippetOperationsAdapter";
 
 describe('Add snippet tests', () => {
-  const fakeStore = new FakeSnippetStore()
+  const snippetOperations = new SnippetOperationsAdapter()
   beforeEach(() => {
-    // cy.loginToAuth0(
-    //     AUTH0_USERNAME,
-    //     AUTH0_PASSWORD
-    // )
+    cy.loginToAuth0(
+        Cypress.env("AUTH0_USERNAME"),
+        Cypress.env("AUTH0_PASSWORD")
+    )
     cy.intercept('GET', BACKEND_URL+"/snippets/*", {
       statusCode: 201,
-      body: fakeStore.getSnippetById("1"),
+      body: snippetOperations.getSnippetById("1"), // todo: necesito pasar el id del snippet que quiero obtener 
     }).as("getSnippetById")
     cy.intercept('GET', BACKEND_URL+"/snippets").as("getSnippets")
 
     cy.visit("/")
 
-    // cy.wait("@getSnippets")
-    cy.wait(2000) // TODO comment this line and uncomment 19 to wait for the real data
+    cy.wait("@getSnippets")
     cy.get('.MuiTableBody-root > :nth-child(1) > :nth-child(1)').click();
   })
 

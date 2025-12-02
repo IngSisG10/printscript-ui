@@ -22,8 +22,8 @@ describe('Protected routes test', () => {
 
   it('should not redirect to login when the user is already authenticated', () => {
     cy.loginToAuth0(
-        AUTH0_USERNAME,
-        AUTH0_PASSWORD
+        Cypress.env("AUTH0_USERNAME"),
+        Cypress.env("AUTH0_PASSWORD")
     )
 
     cy.visit('/');
