@@ -10,12 +10,13 @@ describe('Protected routes test', () => {
     // Visit the protected route
     cy.visit('/');
 
-    // Wait for Auth0 redirect
-    cy.wait(2000);
-
     // Check if the URL is redirected to Auth0 login page
-    cy.url().should('include', Cypress.env('VITE_AUTH0_DOMAIN'));
-    cy.url().should('include', '/u/login');
+    cy.origin(Cypress.env('VITE_AUTH0_DOMAIN'), () => {
+      // this code execute "inside" Auth0
+      cy.url().should('include', '/u/login');
+      
+      cy.url().should('include', 'auth0.com');
+    });
   });
 
   it('should display Auth0 login content', () => {
