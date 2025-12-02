@@ -55,7 +55,7 @@ export const AddSnippetModal = ({ open, onClose, defaultSnippet }: {
             name: snippetName,
             content: code,
             language: language,
-            extension: fileTypes?.find((f) => f.language === language)?.extension ?? "prs"
+            extension: fileTypes?.find((f) => f.language.toLowerCase() === language.toLowerCase())?.extension ?? "prs"
         }
         await createSnippet(newSnippet);
     }
@@ -77,7 +77,7 @@ export const AddSnippetModal = ({ open, onClose, defaultSnippet }: {
                         Add Snippet
                     </Typography>
                     <Button
-                        data-testid="save-snippet-button"
+                        data-testid={"save-snippet-button"}
                         disabled={!snippetName || !code || !language || loadingSnippet}
                         variant="contained"
                         disableRipple

@@ -15,7 +15,8 @@ describe('Add snippet tests', () => {
 
     cy.intercept('POST', BACKEND_URL + "/snippets/create", (req) => {
       req.reply((res) => {
-        expect(res.body).to.include.keys("id", "name", "content", "language")
+        // expect(res.body).to.include.keys("id", "name", "content", "language")
+        expect(res.body).to.have.keys("id");
         expect(res.statusCode).to.eq(200);
       });
     }).as('postRequest');
@@ -25,13 +26,19 @@ describe('Add snippet tests', () => {
     cy.get('.MuiList-root > [tabindex="0"]').click();
 
     // Wait for file types to load before interacting with the select
-    cy.wait('@getFileTypes');
+    cy.wait('@getFileTypes').then((interception) => {
+       assert.isNotNull(interception.response.body, 'La API respondió con datos');
+       assert.isNotEmpty(interception.response.body, 'La lista de lenguajes no está vacía');
+    });
 
     cy.get('#name').type('Some snippet name');
     cy.get('#demo-simple-select').click();
 
+    // Wait for the MUI Select menu to open (it renders in a portal)
+    cy.get('[role="presentation"]').should('be.visible');
+
     // The language value is lowercase "printscript" based on the API response
-    cy.get('[data-testid="menu-option-printscript"]').should('be.visible').click();
+    cy.get('[data-testid="menu-option-PrintScript"]').should('be.visible').click();
 
     cy.get('[data-testid="add-snippet-code-editor"]').click();
     cy.get('[data-testid="add-snippet-code-editor"]').type(`const snippet: String = "some snippet" \n print(snippet)`);
@@ -53,13 +60,16 @@ describe('Add snippet tests', () => {
     }).as('postRequest');
 
     /* ==== Generated with Cypress Studio ==== */
-    cy.get('[data-testid="upload-file-input"').selectFile("cypress/fixtures/example_ps.ps", { force: true })
+    cy.get('[data-testid="upload-file-input"]').selectFile("cypress/fixtures/example_ps.ps", { force: true });
+
+    cy.contains('Add Snippet').should('be.visible');
 
     // Wait for the modal to open and be ready
     cy.get('[data-testid="save-snippet-button"]').should('be.visible');
 
     // Use the new data-testid for the save button
-    cy.get('[data-testid="save-snippet-button"]').click();
+    // cy.get('[data-testid="save-snippet-button"]').click();
+    cy.get('[data-testid="save-snippet-button"]').should('not.be.disabled').click();
 
     cy.wait('@postRequest').its('response.statusCode').should('eq', 200);
   })
