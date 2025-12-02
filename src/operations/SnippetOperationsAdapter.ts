@@ -13,8 +13,8 @@ import { FileType } from "../types/FileType.ts";
 // fixme: endpoints
 export class SnippetOperationsAdapter implements SnippetOperations {
 
-    async listSnippetDescriptors(page: number, pageSize: number, name?: string) {
-        return httpClient.get<PaginatedSnippets>(`/snippets/descriptors?page=${page}&pageSize=${pageSize}&name=${name ?? ""}`);
+    async listSnippetDescriptors(page: number, pageSize: number, name?: string, compliance?: string, language?: string, status?: string) {
+        return httpClient.get<PaginatedSnippets>(`/snippets/descriptors?page=${page}&pageSize=${pageSize}&name=${name ?? ""}&compliance=${compliance ?? "all"}&language=${language ?? ""}&status=${status ?? "all"}`);
     }
 
     async createSnippet(data: CreateSnippet) {
@@ -68,8 +68,12 @@ export class SnippetOperationsAdapter implements SnippetOperations {
         return httpClient.post<TestCase>(`/tests/${snippetId}`, testCase);
     }
 
-    async removeTestCase(id: string) {
-        return httpClient.delete<string>(`/tests/${id}`);
+    async updateTestCase(snippetId: string, testId: string, testCase: Partial<TestCase>) {
+        return httpClient.put<string>(`/tests/${testId}/${snippetId}`, testCase);
+    }
+
+    async removeTestCase(snippetId: string, testId: string) {
+        return httpClient.delete<string>(`/tests/${testId}/${snippetId}`);
     }
 
 
@@ -81,13 +85,15 @@ export class SnippetOperationsAdapter implements SnippetOperations {
         return httpClient.post<ExecutionResult>(`/snippets/run/${snippetId}`);
     }
 
-    // todo: id (necesitamos el id, para saber cual es el snippet a formatear) - chequea que recibe en snippet
-    // todo: tambien chequeate la logica de lo que recibe en el SnippetModal.
     async formatSnippet(snippet: string) {
-        return httpClient.post<string>(`/snippets/${snippet}/format`); // /snippets/${id}/format
+        return httpClient.post<string>(`/snippets/${snippet}/format`); 
     }
 
     async getFileTypes() {
         return httpClient.get<FileType[]>(`/snippets/filetypes`);
+    }
+
+    async registerOrLoginUser() {
+        return httpClient.post<{ success: boolean; userId: string }>(`/users/register-or-login`);
     }
 }
