@@ -112,14 +112,27 @@ export const usePostTestCase = (snippetId?: string) => {
   );
 };
 
+export const useUpdateTestCase = ({ onSuccess }: { onSuccess: () => void }) => {
+  const snippetOperations = useSnippetsOperations();
+  const queryClient = useQueryClient();
 
+  return useMutation<string, Error, { snippetId: string; testId: string; testCase: Partial<TestCase> }>(
+    ({ snippetId, testId, testCase }) => snippetOperations.updateTestCase(snippetId, testId, testCase),
+    {
+      onSuccess: (_, { snippetId }) => {
+        onSuccess();
+        queryClient.invalidateQueries(["testCases", snippetId]);
+      }
+    }
+  );
+};
 
 export const useRemoveTestCase = ({ onSuccess }: { onSuccess: () => void }) => {
   const snippetOperations = useSnippetsOperations()
 
-  return useMutation<string, Error, string>(
+  return useMutation<string, Error, { snippetId: string; testId: string }>(
     ['removeTestCase'],
-    (id) => snippetOperations.removeTestCase(id),
+    ({ snippetId, testId }) => snippetOperations.removeTestCase(snippetId, testId),
     {
       onSuccess,
     }

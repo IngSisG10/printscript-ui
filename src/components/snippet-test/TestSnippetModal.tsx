@@ -2,7 +2,7 @@ import { Box, Divider, IconButton, Tab, Tabs, Typography } from "@mui/material";
 import { ModalWrapper } from "../common/ModalWrapper.tsx";
 import { SyntheticEvent, useState } from "react";
 import { AddRounded } from "@mui/icons-material";
-import { useGetTestCases, usePostTestCase, useRemoveTestCase } from "../../utils/queries.tsx";
+import { useGetTestCases, usePostTestCase, useRemoveTestCase, useUpdateTestCase } from "../../utils/queries.tsx";
 import { TabPanel } from "./TabPanel.tsx";
 import { queryClient } from "../../App.tsx";
 
@@ -17,6 +17,9 @@ export const TestSnippetModal = ({ open, onClose, snippetId }: TestSnippetModalP
 
     const { data: testCases } = useGetTestCases(snippetId);
     const { mutateAsync: postTestCase } = usePostTestCase(snippetId);
+    const { mutateAsync: updateTestCase } = useUpdateTestCase({
+        onSuccess: () => queryClient.invalidateQueries('testCases')
+    });
     const { mutateAsync: removeTestCase } = useRemoveTestCase({
         onSuccess: () => queryClient.invalidateQueries('testCases')
     });
@@ -47,8 +50,8 @@ export const TestSnippetModal = ({ open, onClose, snippetId }: TestSnippetModalP
                 </Tabs>
                 {testCases?.map((testCase, index) => (
                     <TabPanel index={index} value={value} snippetId={snippetId} test={testCase}
-                        setTestCase={(tc) => postTestCase(tc)}
-                        removeTestCase={(i) => removeTestCase(i)}
+                        setTestCase={(tc) => updateTestCase({ snippetId, testId: testCase.id, testCase: tc })}
+                        removeTestCase={(testId) => removeTestCase({ snippetId, testId })}
                     />
                 ))}
                 <TabPanel index={(testCases?.length ?? 0) + 1} value={value} snippetId={snippetId}
