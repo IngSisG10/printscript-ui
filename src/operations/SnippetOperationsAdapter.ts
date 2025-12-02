@@ -68,7 +68,6 @@ export class SnippetOperationsAdapter implements SnippetOperations {
         return httpClient.post<TestCase>(`/tests/${snippetId}`, testCase);
     }
 
-    // todo
     async removeTestCase(snippetId: string, testId: string) {
         return httpClient.delete<string>(`/tests/${testId}/${snippetId}`);
     }
