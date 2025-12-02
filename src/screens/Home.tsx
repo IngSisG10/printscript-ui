@@ -14,9 +14,10 @@ const HomeScreen = () => {
   const [snippetName, setSnippetName] = useState('');
   const [snippetId, setSnippetId] = useState<string | null>(null)
     const [compliance, setCompliance] = useState<string>("all")
+    const [status, setStatus] = useState<string>("all")
     const [language, setLanguage] = useState<string>("")
   const {page, page_size, count, handleChangeCount} = usePaginationContext()
-  const {data, isLoading} = useGetSnippets(page, page_size, snippetName, compliance, language)
+  const {data, isLoading} = useGetSnippets(page, page_size, snippetName, compliance, language, status)
 
   useEffect(() => {
     if (data?.count && data.count != count) {
@@ -51,6 +52,8 @@ const HomeScreen = () => {
                       handleSearchSnippet={handleSearchSnippet}
                       compliance={compliance}
                       setCompliance={setCompliance}
+                      status={status}
+                      setStatus={setStatus}
                       language={language}
                       setLanguage={setLanguage}
         />

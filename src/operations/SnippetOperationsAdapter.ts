@@ -13,8 +13,8 @@ import { FileType } from "../types/FileType.ts";
 // fixme: endpoints
 export class SnippetOperationsAdapter implements SnippetOperations {
 
-    async listSnippetDescriptors(page: number, pageSize: number, name?: string, compliance?: string, language?: string) {
-        return httpClient.get<PaginatedSnippets>(`/snippets/descriptors?page=${page}&pageSize=${pageSize}&name=${name ?? ""}&compliance=${compliance ?? "all"}&language=${language ?? ""}`);
+    async listSnippetDescriptors(page: number, pageSize: number, name?: string, compliance?: string, language?: string, status?: string) {
+        return httpClient.get<PaginatedSnippets>(`/snippets/descriptors?page=${page}&pageSize=${pageSize}&name=${name ?? ""}&compliance=${compliance ?? "all"}&language=${language ?? ""}&status=${status ?? "all"}`);
     }
 
     async createSnippet(data: CreateSnippet) {

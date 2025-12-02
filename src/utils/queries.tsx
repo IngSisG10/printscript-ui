@@ -26,10 +26,10 @@ export const useSnippetsOperations = () => {
   return snippetOperations
 }
 
-export const useGetSnippets = (page: number = 0, pageSize: number = 10, snippetName?: string, compliance?: string, language?: string) => {
+export const useGetSnippets = (page: number = 0, pageSize: number = 10, snippetName?: string, compliance?: string, language?: string, status?: string) => {
   const snippetOperations = useSnippetsOperations()
 
-  return useQuery<PaginatedSnippets, Error>(['listSnippets', page, pageSize, snippetName, compliance, language], () => snippetOperations.listSnippetDescriptors(page, pageSize, snippetName, compliance, language));
+  return useQuery<PaginatedSnippets, Error>(['listSnippets', page, pageSize, snippetName, compliance, language, status], () => snippetOperations.listSnippetDescriptors(page, pageSize, snippetName, compliance, language, status));
 };
 
 export const useGetSnippetById = (id: string) => {

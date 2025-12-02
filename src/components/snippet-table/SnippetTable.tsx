@@ -32,12 +32,14 @@ type SnippetTableProps = {
   handleSearchSnippet: (snippetName: string) => void;
   compliance: string;
   setCompliance: Dispatch<SetStateAction<string>>;
+  status: string;
+  setStatus: Dispatch<SetStateAction<string>>;
   language: string;
   setLanguage: Dispatch<SetStateAction<string>>;
 }
 
 export const SnippetTable = (props: SnippetTableProps) => {
-  const { snippets, handleClickSnippet, loading, handleSearchSnippet, compliance, setCompliance, language, setLanguage } = props;
+  const { snippets, handleClickSnippet, loading, handleSearchSnippet, compliance, setCompliance, language, setLanguage, status, setStatus } = props;
   const [addModalOpened, setAddModalOpened] = useState(false);
   const [popoverMenuOpened, setPopoverMenuOpened] = useState(false)
   const [snippet, setSnippet] = useState<CreateSnippetWithLang | undefined>()
@@ -97,6 +99,24 @@ export const SnippetTable = (props: SnippetTableProps) => {
                 <Select
                     value={compliance}
                     onChange={(e) => setCompliance(e.target.value)}
+                    sx={{
+                        minWidth: 120,
+                        boxShadow: 0,
+                        background: 'white',
+                        color: 'black',
+                        borderRadius: '10px',
+                        '& .MuiOutlinedInput-notchedOutline': { border: 0 },
+                        '& .MuiSelect-icon': { color: 'black' }
+                    }}
+                >
+                    <MenuItem value="all">All</MenuItem>
+                    <MenuItem value="pending">Pending</MenuItem>
+                    <MenuItem value="valid">Valid</MenuItem>
+                    <MenuItem value="invalid">Invalid</MenuItem>
+                </Select>
+                <Select
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
                     sx={{
                         minWidth: 120,
                         boxShadow: 0,
