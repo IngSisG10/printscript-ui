@@ -26,10 +26,10 @@ export const useSnippetsOperations = () => {
   return snippetOperations
 }
 
-export const useGetSnippets = (page: number = 0, pageSize: number = 10, snippetName?: string) => {
+export const useGetSnippets = (page: number = 0, pageSize: number = 10, snippetName?: string, compliance?: string, language?: string, status?: string) => {
   const snippetOperations = useSnippetsOperations()
 
-  return useQuery<PaginatedSnippets, Error>(['listSnippets', page, pageSize, snippetName], () => snippetOperations.listSnippetDescriptors(page, pageSize, snippetName));
+  return useQuery<PaginatedSnippets, Error>(['listSnippets', page, pageSize, snippetName, compliance, language, status], () => snippetOperations.listSnippetDescriptors(page, pageSize, snippetName, compliance, language, status));
 };
 
 export const useGetSnippetById = (id: string) => {
@@ -112,14 +112,27 @@ export const usePostTestCase = (snippetId?: string) => {
   );
 };
 
+export const useUpdateTestCase = ({ onSuccess }: { onSuccess: () => void }) => {
+  const snippetOperations = useSnippetsOperations();
+  const queryClient = useQueryClient();
 
+  return useMutation<string, Error, { snippetId: string; testId: string; testCase: Partial<TestCase> }>(
+    ({ snippetId, testId, testCase }) => snippetOperations.updateTestCase(snippetId, testId, testCase),
+    {
+      onSuccess: (_, { snippetId }) => {
+        onSuccess();
+        queryClient.invalidateQueries(["testCases", snippetId]);
+      }
+    }
+  );
+};
 
 export const useRemoveTestCase = ({ onSuccess }: { onSuccess: () => void }) => {
   const snippetOperations = useSnippetsOperations()
 
-  return useMutation<string, Error, string>(
+  return useMutation<string, Error, { snippetId: string; testId: string }>(
     ['removeTestCase'],
-    (id) => snippetOperations.removeTestCase(id),
+    ({ snippetId, testId }) => snippetOperations.removeTestCase(snippetId, testId),
     {
       onSuccess,
     }
@@ -213,4 +226,12 @@ export const useGetFileTypes = () => {
   const snippetOperations = useSnippetsOperations()
 
   return useQuery<FileType[], Error>('fileTypes', () => snippetOperations.getFileTypes());
+}
+
+export const useRegisterOrLoginUser = () => {
+    const snippetOperations = useSnippetsOperations()
+
+    return useMutation<{ success: boolean; userId: string }, Error>(
+        () => snippetOperations.registerOrLoginUser()
+    );
 }

@@ -5,6 +5,7 @@ import {
   InputBase,
   Menu,
   MenuItem,
+  Select,
   styled,
   Table,
   TableBody,
@@ -14,8 +15,9 @@ import {
   TablePagination,
   TableRow
 } from "@mui/material";
+
 import { AddSnippetModal } from "./AddSnippetModal.tsx";
-import { useRef, useState } from "react";
+import { Dispatch, SetStateAction, useRef, useState } from "react";
 import { Add, Search } from "@mui/icons-material";
 import { LoadingSnippetRow, SnippetRow } from "./SnippetRow.tsx";
 import { CreateSnippetWithLang, getFileLanguage, Snippet } from "../../utils/snippet.ts";
@@ -28,14 +30,19 @@ type SnippetTableProps = {
   snippets?: Snippet[];
   loading: boolean;
   handleSearchSnippet: (snippetName: string) => void;
+  compliance: string;
+  setCompliance: Dispatch<SetStateAction<string>>;
+  status: string;
+  setStatus: Dispatch<SetStateAction<string>>;
+  language: string;
+  setLanguage: Dispatch<SetStateAction<string>>;
 }
 
 export const SnippetTable = (props: SnippetTableProps) => {
-  const { snippets, handleClickSnippet, loading, handleSearchSnippet } = props;
+  const { snippets, handleClickSnippet, loading, handleSearchSnippet, compliance, setCompliance, language, setLanguage, status, setStatus } = props;
   const [addModalOpened, setAddModalOpened] = useState(false);
   const [popoverMenuOpened, setPopoverMenuOpened] = useState(false)
   const [snippet, setSnippet] = useState<CreateSnippetWithLang | undefined>()
-
   const popoverRef = useRef<HTMLButtonElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const { page, page_size: pageSize, count, handleChangePageSize, handleGoToPage } = usePaginationContext()
@@ -77,10 +84,10 @@ export const SnippetTable = (props: SnippetTableProps) => {
   return (
     <>
       <Box display="flex" flexDirection="row" justifyContent="space-between">
-        <Box sx={{ background: 'white', width: '30%', display: 'flex' }}>
+        <Box sx={{ background: 'white', width: '30%', display: 'flex', borderRadius: '10px' }}>
           <InputBase
             sx={{ ml: 1, flex: 1 }}
-            placeholder="Search FileType"
+            placeholder="Search Snippet"
             inputProps={{ 'aria-label': 'search' }}
             onChange={e => handleSearchSnippet(e.target.value)}
           />
@@ -88,12 +95,71 @@ export const SnippetTable = (props: SnippetTableProps) => {
             <Search />
           </IconButton>
         </Box>
-        <Button ref={popoverRef} variant="contained" disableRipple sx={{ boxShadow: 0 }}
-          onClick={() => setPopoverMenuOpened(true)}>
-          <Add />
-          Add Snippet
-        </Button>
-      </Box>
+            <Box display="flex" gap={2}>
+                <Select
+                    value={compliance}
+                    onChange={(e) => setCompliance(e.target.value)}
+                    sx={{
+                        minWidth: 120,
+                        boxShadow: 0,
+                        background: 'white',
+                        color: 'black',
+                        borderRadius: '10px',
+                        '& .MuiOutlinedInput-notchedOutline': { border: 0 },
+                        '& .MuiSelect-icon': { color: 'black' }
+                    }}
+                >
+                    <MenuItem value="all">All</MenuItem>
+                    <MenuItem value="pending">Pending</MenuItem>
+                    <MenuItem value="valid">Valid</MenuItem>
+                    <MenuItem value="invalid">Invalid</MenuItem>
+                </Select>
+                <Select
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                    sx={{
+                        minWidth: 120,
+                        boxShadow: 0,
+                        background: 'white',
+                        color: 'black',
+                        borderRadius: '10px',
+                        '& .MuiOutlinedInput-notchedOutline': { border: 0 },
+                        '& .MuiSelect-icon': { color: 'black' }
+                    }}
+                >
+                    <MenuItem value="all">All</MenuItem>
+                    <MenuItem value="owner">Owner</MenuItem>
+                    <MenuItem value="read">Read</MenuItem>
+                </Select>
+                <Select
+                    value={language}
+                    onChange={(e) => setLanguage(e.target.value)}
+                    displayEmpty
+                    sx={{
+                        minWidth: 120,
+                        boxShadow: 0,
+                        background: 'white',
+                        color: 'black',
+                        borderRadius: '10px',
+                        '& .MuiOutlinedInput-notchedOutline': { border: 0 },
+                        '& .MuiSelect-icon': { color: 'black' }
+                    }}
+                >
+                    <MenuItem value="">
+                        <em>Language</em>
+                    </MenuItem>
+                    {fileTypes?.map(fileType => (
+                        <MenuItem key={fileType.language} value={fileType.language}>{fileType.language}</MenuItem>
+                    ))}
+                </Select>
+
+                <Button ref={popoverRef} variant="contained" disableRipple sx={{ boxShadow: 0 }}
+                        onClick={() => setPopoverMenuOpened(true)}>
+                    <Add />
+                    Add Snippet
+                </Button>
+            </Box>
+        </Box>
       <Table size="medium" sx={{ borderSpacing: "0 10px", borderCollapse: "separate" }}>
         <TableHead>
           <TableRow sx={{ fontWeight: 'bold' }}>
