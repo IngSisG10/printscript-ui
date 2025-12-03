@@ -14,7 +14,7 @@ import { FileType } from "../types/FileType.ts";
 export class SnippetOperationsAdapter implements SnippetOperations {
 
     async listSnippetDescriptors(page: number, pageSize: number, name?: string) {
-        return httpClient.get<PaginatedSnippets>(`/snippets/descriptors?page=${page}&pageSize=${pageSize}&name=${name ?? ""}`);
+        return httpClient.get<PaginatedSnippets>(`/snippets/descriptors?page=${page}&pageSize=${pageSize}&name=${name} ?? ""}`);
     }
 
     async createSnippet(data: CreateSnippet) {
