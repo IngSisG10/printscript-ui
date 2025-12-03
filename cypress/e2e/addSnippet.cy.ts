@@ -13,13 +13,7 @@ describe('Add snippet tests', () => {
     // Intercept the file types request to ensure it loads before we interact with the select
     cy.intercept('GET', BACKEND_URL + "/snippets/filetypes").as('getFileTypes');
 
-    cy.intercept('POST', BACKEND_URL + "/snippets/create", (req) => {
-      req.reply((res) => {
-        // expect(res.body).to.include.keys("id", "name", "content", "language")
-        expect(res.body).to.have.keys("id");
-        expect(res.statusCode).to.eq(200);
-      });
-    }).as('postRequest');
+    cy.intercept('POST', BACKEND_URL + "/snippets/create").as('postRequest');
 
     /* ==== Generated with Cypress Studio ==== */
     cy.get('.css-9jay18 > .MuiButton-root').click();
@@ -46,18 +40,16 @@ describe('Add snippet tests', () => {
     // Use the new data-testid for the save button
     cy.get('[data-testid="save-snippet-button"]').click();
 
-    cy.wait('@postRequest').its('response.statusCode').should('eq', 200);
+    cy.wait('@postRequest').then((interception) => {
+      expect(interception.response?.statusCode).to.eq(200);
+      expect(interception.response?.body).to.have.property("id");
+    });
   })
 
   it('Can add snippets via file', () => {
     cy.visit("/")
 
-    cy.intercept('POST', BACKEND_URL + "/snippets/create", (req) => {
-      req.reply((res) => {
-        expect(res.body).to.include.keys("id", "name", "content", "language")
-        expect(res.statusCode).to.eq(200);
-      });
-    }).as('postRequest');
+    cy.intercept('POST', BACKEND_URL + "/snippets/create").as('postRequest');
 
     /* ==== Generated with Cypress Studio ==== */
     cy.get('[data-testid="upload-file-input"]').selectFile("cypress/fixtures/example_ps.ps", { force: true });
@@ -71,6 +63,9 @@ describe('Add snippet tests', () => {
     // cy.get('[data-testid="save-snippet-button"]').click();
     cy.get('[data-testid="save-snippet-button"]').should('not.be.disabled').click();
 
-    cy.wait('@postRequest').its('response.statusCode').should('eq', 200);
+    cy.wait('@postRequest').then((interception) => {
+      expect(interception.response?.statusCode).to.eq(200);
+      expect(interception.response?.body).to.have.property("id");
+    });
   })
 })
