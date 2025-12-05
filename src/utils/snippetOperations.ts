@@ -1,12 +1,12 @@
-import { CreateSnippet, ExecutionResult, PaginatedSnippets, Snippet, UpdateSnippet } from './snippet'
-import { PaginatedUsers } from "./users.ts";
-import { TestCase } from "../types/TestCase.ts";
-import { TestCaseResult } from "./queries.tsx";
-import { FileType } from "../types/FileType.ts";
-import { Rule } from "../types/Rule.ts";
+import {CreateSnippet, ExecutionResult, PaginatedSnippets, Snippet, UpdateSnippet} from './snippet'
+import {PaginatedUsers} from "./users.ts";
+import {TestCase} from "../types/TestCase.ts";
+import {TestCaseResult} from "./queries.tsx";
+import {FileType} from "../types/FileType.ts";
+import {Rule} from "../types/Rule.ts";
 
 export interface SnippetOperations {
-  listSnippetDescriptors(page: number, pageSize: number, sippetName?: string): Promise<PaginatedSnippets>
+  listSnippetDescriptors(page: number,pageSize: number, sippetName?: string, compliance?: string, language?: string, status?: string): Promise<PaginatedSnippets>
 
   createSnippet(createSnippet: CreateSnippet): Promise<Snippet>
 
@@ -28,7 +28,9 @@ export interface SnippetOperations {
 
   postTestCase(snippetId: string, testCase: Partial<TestCase>): Promise<TestCase>
 
-  removeTestCase(id: string): Promise<string>
+  updateTestCase(snippetId: string, testId: string, testCase: Partial<TestCase>): Promise<string>
+
+  removeTestCase(snippetId: string, testId: string): Promise<string>
 
   deleteSnippet(id: string): Promise<string>
 
@@ -41,4 +43,6 @@ export interface SnippetOperations {
   modifyLintingRule(newRules: Rule[]): Promise<Rule[]>
 
   runSnippet(snippetId: string): Promise<ExecutionResult>
+
+  registerOrLoginUser(): Promise<{ success: boolean; userId: string }>
 }
