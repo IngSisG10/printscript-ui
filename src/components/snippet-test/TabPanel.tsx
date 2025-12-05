@@ -18,6 +18,8 @@ type TabPanelProps = {
 export const TabPanel = ({ value, index, snippetId, test: initialTest, setTestCase, removeTestCase }: TabPanelProps) => {
     const [testData, setTestData] = useState<Partial<TestCase> | undefined>(initialTest);
     const [testResult, setTestResult] = useState<TestCaseResult | null>(null);
+    const [inputValue, setInputValue] = useState<string>('');
+    const [outputValue, setOutputValue] = useState<string>('');
 
     const { mutateAsync: testSnippet, isLoading } = useTestSnippet(snippetId);
 
@@ -52,10 +54,19 @@ export const TabPanel = ({ value, index, snippetId, test: initialTest, setTestCa
                         <Autocomplete
                             multiple
                             size="small"
-                            id="tags-filled"
+                            id="tags-filled-input"
                             freeSolo
                             value={testData?.input ?? []}
-                            onChange={(_, value) => setTestData({ ...testData, input: value })}
+                            inputValue={inputValue}
+                            onInputChange={(_, newInputValue) => {
+                                setInputValue(newInputValue);
+                            }}
+                            onChange={(_, newValue) => {
+                                setTestData({ ...testData, input: newValue });
+                            }}
+                            selectOnFocus
+                            handleHomeEndKeys
+                            blurOnSelect={false}
                             renderTags={(value: readonly string[], getTagProps) =>
                                 value.map((option: string, index: number) => (
                                     <Chip variant="outlined" label={option} {...getTagProps({ index })} />
@@ -64,6 +75,19 @@ export const TabPanel = ({ value, index, snippetId, test: initialTest, setTestCa
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
+                                    onKeyDown={(event) => {
+                                        if (event.key === 'Enter') {
+                                            const trimmedValue = inputValue.trim();
+                                            if (trimmedValue) {
+                                                event.preventDefault();
+                                                event.stopPropagation();
+                                                const currentInputs = testData?.input ?? [];
+                                                const newInputs = [...currentInputs, trimmedValue];
+                                                setTestData({ ...testData, input: newInputs });
+                                                setInputValue('');
+                                            }
+                                        }
+                                    }}
                                 />
                             )}
                             options={[]}
@@ -74,10 +98,19 @@ export const TabPanel = ({ value, index, snippetId, test: initialTest, setTestCa
                         <Autocomplete
                             multiple
                             size="small"
-                            id="tags-filled"
+                            id="tags-filled-output"
                             freeSolo
                             value={testData?.output ?? []}
-                            onChange={(_, value) => setTestData({ ...testData, output: value })}
+                            inputValue={outputValue}
+                            onInputChange={(_, newInputValue) => {
+                                setOutputValue(newInputValue);
+                            }}
+                            onChange={(_, newValue) => {
+                                setTestData({ ...testData, output: newValue });
+                            }}
+                            selectOnFocus
+                            handleHomeEndKeys
+                            blurOnSelect={false}
                             renderTags={(value: readonly string[], getTagProps) =>
                                 value.map((option: string, index: number) => (
                                     <Chip variant="outlined" label={option} {...getTagProps({ index })} />
@@ -86,6 +119,19 @@ export const TabPanel = ({ value, index, snippetId, test: initialTest, setTestCa
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
+                                    onKeyDown={(event) => {
+                                        if (event.key === 'Enter') {
+                                            const trimmedValue = outputValue.trim();
+                                            if (trimmedValue) {
+                                                event.preventDefault();
+                                                event.stopPropagation();
+                                                const currentOutputs = testData?.output ?? [];
+                                                const newOutputs = [...currentOutputs, trimmedValue];
+                                                setTestData({ ...testData, output: newOutputs });
+                                                setOutputValue('');
+                                            }
+                                        }
+                                    }}
                                 />
                             )}
                             options={[]}

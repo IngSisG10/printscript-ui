@@ -3,10 +3,12 @@ import {
   Button,
   Card,
   Checkbox,
+  FormControlLabel,
   List,
   ListItem,
   ListItemText, TextField,
-  Typography
+  Typography,
+  Box
 } from "@mui/material";
 import {useGetLintingRules, useModifyLintingRules} from "../../utils/queries.tsx";
 import {queryClient} from "../../App.tsx";
@@ -51,9 +53,33 @@ const LintingRulesList = () => {
     setRules(newRules)
   }
 
+  const allRulesActive = rules && rules.length > 0 && rules.every(r => r.isActive);
+  const someRulesActive = rules && rules.length > 0 && rules.some(r => r.isActive) && !allRulesActive;
+
+  const toggleAllRules = () => {
+    const shouldActivate = !allRulesActive;
+    const newRules = rules?.map(r => ({
+      ...r,
+      isActive: shouldActivate
+    }));
+    setRules(newRules);
+  };
+
   return (
     <Card style={{padding: 16, margin: 16}}>
-      <Typography variant={"h6"}>Linting rules</Typography>
+      <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+        <Typography variant={"h6"}>Linting rules</Typography>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={allRulesActive}
+              indeterminate={someRulesActive}
+              onChange={toggleAllRules}
+            />
+          }
+          label="Enable/Disable All"
+        />
+      </Box>
       <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
         {
           isLoading || isLoadingMutate ?  <Typography style={{height: 80}}>Loading...</Typography> :
