@@ -63,5 +63,13 @@ export class HttpClient {
 }
 
 
-export const httpClient = new HttpClient(import.meta.env.VITE_NGINX_URL || 'http://localhost:8082');
-export const httpUserClient = new HttpClient(import.meta.env.VITE_NGINX_URL || 'http://localhost:8082');
+const getBaseURL = (): string => {
+    // Safely access import.meta.env, handling cases where it might be undefined (e.g., in Cypress)
+    if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_NGINX_URL) {
+        return import.meta.env.VITE_NGINX_URL;
+    }
+    return 'http://localhost:8082';
+};
+
+export const httpClient = new HttpClient(getBaseURL());
+export const httpUserClient = new HttpClient(getBaseURL());

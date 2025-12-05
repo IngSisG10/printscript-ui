@@ -103,7 +103,23 @@ export const SnippetDetail = (props: SnippetDetailProps) => {
 
 
   async function handleShareSnippet(userId: string) {
-    shareSnippet({ snippetId: id, userId })
+    shareSnippet(
+      { snippetId: id, userId },
+      {
+        onSuccess: () => {
+          createSnackbar('success', 'Successfully shared snippet');
+          setShareModalOppened(false);
+        },
+        onError: (error: Error) => {
+          if (error instanceof ApiError) {
+            const errorMessage = error.getErrorMessage();
+            createSnackbar('error', errorMessage);
+          } else {
+            createSnackbar('error', error.message || 'Error sharing snippet');
+          }
+        }
+      }
+    );
   }
 
   function handleRunSnippet() {

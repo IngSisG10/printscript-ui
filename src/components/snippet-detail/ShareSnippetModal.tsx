@@ -17,6 +17,13 @@ export const ShareSnippetModal = (props: ShareSnippetModalProps) => {
   const {data, isLoading} = useGetUsers(debouncedName, 0, 5)
   const [selectedUser, setSelectedUser] = useState<User | undefined>()
 
+  // Load users automatically when modal opens
+  useEffect(() => {
+    if (open) {
+      setDebouncedName("") // Empty string loads all users
+    }
+  }, [open])
+
   useEffect(() => {
     const getData = setTimeout(() => {
       setDebouncedName(name)
@@ -34,7 +41,8 @@ export const ShareSnippetModal = (props: ShareSnippetModalProps) => {
         <Divider/>
         <Box mt={2}>
           <Autocomplete
-              renderInput={(params) => <TextField {...params} label="Type the user's name"/>}
+              data-testid="share-user-autocomplete"
+              renderInput={(params) => <TextField {...params} label="Type the user's name" data-testid="share-user-input"/>}
               options={data?.users ?? []}
               isOptionEqualToValue={(option, value) =>
                   option.id === value.id
@@ -46,8 +54,8 @@ export const ShareSnippetModal = (props: ShareSnippetModalProps) => {
               onChange={(_: unknown, newValue: User | null) => handleSelectUser(newValue)}
           />
           <Box mt={4} display={"flex"} width={"100%"} justifyContent={"flex-end"}>
-            <Button onClick={onClose} variant={"outlined"}>Cancel</Button>
-            <Button disabled={!selectedUser || loading} onClick={() => selectedUser && onShare(selectedUser?.name)} sx={{marginLeft: 2}} variant={"contained"}>Share</Button>
+            <Button onClick={onClose} variant={"outlined"} data-testid="cancel-share-button">Cancel</Button>
+            <Button disabled={!selectedUser || loading} onClick={() => selectedUser && onShare(selectedUser?.name)} sx={{marginLeft: 2}} variant={"contained"} data-testid="confirm-share-button">Share</Button>
           </Box>
         </Box>
       </ModalWrapper>

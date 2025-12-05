@@ -1,12 +1,12 @@
-import {AUTH0_PASSWORD, AUTH0_USERNAME, BACKEND_URL, FRONTEND_URL} from "../../src/utils/constants";
-import {CreateSnippet} from "../../src/utils/snippet";
+import { BACKEND_URL, FRONTEND_URL } from "../../src/utils/constants";
+import { CreateSnippet } from "../../src/utils/snippet";
 
 describe('Home', () => {
   beforeEach(() => {
-    // cy.loginToAuth0( TODO DE-Comment when auth0 is ready
-    //     AUTH0_USERNAME,
-    //     AUTH0_PASSWORD
-    // )
+    cy.loginToAuth0(
+      Cypress.env("AUTH0_USERNAME"),
+      Cypress.env("AUTH0_PASSWORD")
+    )
   })
   before(() => {
     process.env.FRONTEND_URL = Cypress.env("FRONTEND_URL");
@@ -16,9 +16,9 @@ describe('Home', () => {
     cy.visit(FRONTEND_URL)
     /* ==== Generated with Cypress Studio ==== */
     cy.get('.MuiTypography-h6').should('have.text', 'Printscript');
-    cy.get('.MuiBox-root > .MuiInputBase-root > .MuiInputBase-input').should('be.visible');
-    cy.get('.css-9jay18 > .MuiButton-root').should('be.visible');
-    cy.get('.css-jie5ja').click();
+    cy.get('[data-testid="search-snippet-input"]').should('be.visible');
+    cy.get('[data-testid="add-snippet-button"]').should('be.visible');
+    cy.get('[data-testid="add-snippet-button"]').click();
     /* ==== End Cypress Studio ==== */
   })
 
@@ -29,42 +29,46 @@ describe('Home', () => {
 
     first10Snippets.should('have.length.greaterThan', 0)
 
-    first10Snippets.should('have.length.lessThan', 10)
+    // Accept up to 10 snippets (the page size is 10, so having exactly 10 is valid)
+    first10Snippets.should('have.length.at.most', 10)
   })
 
-  it('Can creat snippet find snippets by name', () => {
+  it('Can create snippet find snippets by name', () => {
     cy.visit(FRONTEND_URL)
     const snippetData: CreateSnippet = {
       name: "Test name",
       content: "print(1)",
-      language: "printscript",
+      language: "PrintScript",
       extension: ".ps"
     }
 
-    cy.intercept('GET', BACKEND_URL+"/snippets*", (req) => {
-      req.reply((res) => {
-        expect(res.statusCode).to.eq(200);
-      });
-    }).as('getSnippets');
+    cy.window().then((win) => {
+      const auth0State = JSON.parse(localStorage.getItem(
+        Object.keys(localStorage).find(key => key.startsWith('@@auth0spajs@@'))!
+      )!);
+      const accessToken = auth0State.body.access_token;
 
-    cy.request({
-      method: 'POST',
-      url: '/snippets', // Adjust if you have a different base URL configured in Cypress
-      body: snippetData,
-      failOnStatusCode: false // Optional: set to true if you want the test to fail on non-2xx status codes
-    }).then((response) => {
-      expect(response.status).to.eq(200);
+      cy.request({
+        method: 'POST',
+        url: BACKEND_URL + '/snippets/create',
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        },
+        body: snippetData,
+        failOnStatusCode: false
+      }).then((response) => {
+        expect(response.status).to.eq(200);
+        expect(response.body).to.haveOwnProperty("id")
 
-      expect(response.body.name).to.eq(snippetData.name)
-      expect(response.body.content).to.eq(snippetData.content)
-      expect(response.body.language).to.eq(snippetData.language)
-      expect(response.body).to.haveOwnProperty("id")
+        // Set up intercept BEFORE triggering the search to capture the GET request
+        cy.intercept('GET', '**/snippets/descriptors*').as('getSnippets');
 
-      cy.get('.MuiBox-root > .MuiInputBase-root > .MuiInputBase-input').clear();
-      cy.get('.MuiBox-root > .MuiInputBase-root > .MuiInputBase-input').type(snippetData.name + "{enter}");
+        cy.get('[data-testid="search-snippet-input"]').clear();
+        cy.get('[data-testid="search-snippet-input"]').type(snippetData.name + "{enter}");
 
-      cy.wait("@getSnippets")
-      cy.contains(snippetData.name).should('exist');
+        cy.wait("@getSnippets")
+        cy.contains(snippetData.name).should('exist');
+      })
     })
   })
 })

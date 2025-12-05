@@ -55,7 +55,7 @@ export const AddSnippetModal = ({ open, onClose, defaultSnippet }: {
             name: snippetName,
             content: code,
             language: language,
-            extension: fileTypes?.find((f) => f.language === language)?.extension ?? "prs"
+            extension: fileTypes?.find((f) => f.language.toLowerCase() === language.toLowerCase())?.extension ?? "prs"
         }
         await createSnippet(newSnippet);
     }
@@ -76,9 +76,13 @@ export const AddSnippetModal = ({ open, onClose, defaultSnippet }: {
                         sx={{ display: 'flex', alignItems: 'center' }}>
                         Add Snippet
                     </Typography>
-                    <Button disabled={!snippetName || !code || !language || loadingSnippet} variant="contained"
+                    <Button
+                        data-testid={"save-snippet-button"}
+                        disabled={!snippetName || !code || !language || loadingSnippet}
+                        variant="contained"
                         disableRipple
-                        sx={{ boxShadow: 0 }} onClick={handleCreateSnippet}>
+                        sx={{ boxShadow: 0 }}
+                        onClick={handleCreateSnippet}>
                         <Box pr={1} display={"flex"} alignItems={"center"} justifyContent={"center"}>
                             {loadingSnippet ? <CircularProgress size={24} /> : <Save />}
                         </Box>
@@ -93,6 +97,7 @@ export const AddSnippetModal = ({ open, onClose, defaultSnippet }: {
             }}>
                 <InputLabel htmlFor="name">Name</InputLabel>
                 <Input onChange={e => setSnippetName(e.target.value)} value={snippetName} id="name"
+                    inputProps={{ 'data-testid': 'snippet-name-input' }}
                     sx={{ width: '50%' }} />
             </Box>
             <Box sx={{
