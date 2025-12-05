@@ -8,6 +8,7 @@ export const ModalWrapper = ({open, onClose,children}: { open: boolean, onClose:
           onClose={onClose}
           aria-labelledby="modal-modal-title"
           aria-describedby="modal-modal-description"
+          data-testid="modal-wrapper"
           sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}
       >
         <Box sx={{

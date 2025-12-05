@@ -6,6 +6,8 @@ describe('Add snippet tests', () => {
       Cypress.env("AUTH0_USERNAME"),
       Cypress.env("AUTH0_PASSWORD")
     )
+    // Wait a bit for authentication to be fully established
+    cy.wait(500)
   })
   it('Can add snippets manually', () => {
     cy.visit("/")
@@ -16,8 +18,8 @@ describe('Add snippet tests', () => {
     cy.intercept('POST', BACKEND_URL + "/snippets/create").as('postRequest');
 
     /* ==== Generated with Cypress Studio ==== */
-    cy.get('.css-9jay18 > .MuiButton-root').click();
-    cy.get('.MuiList-root > [tabindex="0"]').click();
+    cy.get('[data-testid="add-snippet-button"]').click();
+    cy.get('[data-testid="create-snippet-menu-item"]').click();
 
     // Wait for file types to load before interacting with the select
     cy.wait('@getFileTypes').then((interception) => {
@@ -52,16 +54,33 @@ describe('Add snippet tests', () => {
     cy.intercept('POST', BACKEND_URL + "/snippets/create").as('postRequest');
 
     /* ==== Generated with Cypress Studio ==== */
+    // First, open the menu to access the file upload option
+    cy.get('[data-testid="add-snippet-button"]').click();
+    cy.get('[data-testid="load-snippet-menu-item"]').click();
+    
+    // Now select the file - this should trigger the file load and open the modal
     cy.get('[data-testid="upload-file-input"]').selectFile("cypress/fixtures/example_ps.ps", { force: true });
 
-    cy.contains('Add Snippet').should('be.visible');
-
-    // Wait for the modal to open and be ready
-    cy.get('[data-testid="save-snippet-button"]').should('be.visible');
-
-    // Use the new data-testid for the save button
-    // cy.get('[data-testid="save-snippet-button"]').click();
-    cy.get('[data-testid="save-snippet-button"]').should('not.be.disabled').click();
+    // Wait for the modal to appear in the DOM first
+    cy.get('[data-testid="modal-wrapper"]', { timeout: 10000 }).should('exist');
+    
+    // Then wait for the modal content to be visible
+    cy.contains('Add Snippet', { timeout: 10000 }).should('be.visible');
+    
+    // Wait for the modal to be fully rendered - check for the name input field
+    // Using the id selector as fallback since Material-UI Input may not pass data-testid correctly
+    cy.get('#name', { timeout: 10000 })
+      .should('be.visible')
+      .should(($input) => {
+        const value = $input.val() as string;
+        expect(value).to.not.be.empty;
+      });
+    
+    // Wait for the button to be available and enabled
+    cy.get('[data-testid="save-snippet-button"]', { timeout: 10000 })
+      .should('be.visible')
+      .should('not.be.disabled')
+      .click();
 
     cy.wait('@postRequest').then((interception) => {
       expect(interception.response?.statusCode).to.eq(200);

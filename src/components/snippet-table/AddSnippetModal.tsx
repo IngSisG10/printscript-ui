@@ -97,6 +97,7 @@ export const AddSnippetModal = ({ open, onClose, defaultSnippet }: {
             }}>
                 <InputLabel htmlFor="name">Name</InputLabel>
                 <Input onChange={e => setSnippetName(e.target.value)} value={snippetName} id="name"
+                    inputProps={{ 'data-testid': 'snippet-name-input' }}
                     sx={{ width: '50%' }} />
             </Box>
             <Box sx={{
