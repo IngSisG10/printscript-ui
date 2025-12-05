@@ -107,7 +107,7 @@ export const SnippetDetail = (props: SnippetDetailProps) => {
       { snippetId: id, userId },
       {
         onSuccess: () => {
-          createSnackbar('success', 'Snippet compartido exitosamente');
+          createSnackbar('success', 'Successfully shared snippet');
           setShareModalOppened(false);
         },
         onError: (error: Error) => {
@@ -115,7 +115,7 @@ export const SnippetDetail = (props: SnippetDetailProps) => {
             const errorMessage = error.getErrorMessage();
             createSnackbar('error', errorMessage);
           } else {
-            createSnackbar('error', error.message || 'Error al compartir el snippet');
+            createSnackbar('error', error.message || 'Error sharing snippet');
           }
         }
       }
